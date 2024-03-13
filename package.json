@@ -9,9 +9,26 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "react": "^18",
+    "axios": "^1.6.7",
+    "compressorjs": "^1.2.1",
+    "cookies-next": "^4.1.1",
+    "indian_address": "^1.0.0",
+    "jose": "^5.2.2",
+    "jsonwebtoken": "^9.0.2",
+    "jwt-simple": "^0.5.6",
+    "mongoose": "^8.1.1",
+    "next": "^14.1.2",
+    "nodemailer": "^6.9.9",
+    "razorpay": "^2.9.2",
+    "react": "^18.2.0",
     "react-dom": "^18",
-    "next": "14.1.0"
+    "react-icons": "^5.0.1",
+    "react-infinite-scroll-component": "^6.1.0",
+    "react-telegram-login": "^1.1.2",
+    "react-toastify": "^10.0.4",
+    "sharp": "^0.33.2",
+    "telegraf": "^4.15.3",
+    "zustand": "^4.5.2"
   },
   "devDependencies": {
     "autoprefixer": "^10.0.1",

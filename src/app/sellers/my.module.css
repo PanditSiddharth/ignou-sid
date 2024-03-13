@@ -1,0 +1,11 @@
+.scrollhide {
+    /* Enable horizontal scrolling */
+    overflow-x: auto;
+    /* Hide horizontal scrollbar */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* Internet Explorer and Edge */
+  }
+
+.scrollhide::-webkit-scrollbar {
+    display: none; /* Hide the scrollbar in WebKit browsers */
+  }
