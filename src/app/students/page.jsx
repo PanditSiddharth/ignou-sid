@@ -3,30 +3,19 @@ import Link from "next/link";
 import cssi from "./my.module.css"
 import { IoMenu } from "react-icons/io5";
 import { IoIosSearch } from "react-icons/io";
-import { MdVerifiedUser } from "react-icons/md";
-import { deleteCookie, getCookie } from "cookies-next";
 import MyImage from "next/image"
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify"
 import { useLoadingStore, useStudentActiveTab } from "@/store";
-import { paginate } from "./server";
-import { useRouter } from "next/navigation";
+import StudentsTab from "./students";
+import TopStudentsTab from "./topStudents";
+import NewStudentsTab from "./newStudents";
 
 const Students = () => {
-
-  const [students, setStudents] = useState([[], [], []])
-  let [showStudents, setShowStudents] = useState([[], [], []])
-  const [scroll, setScroll] = useState({})
   const [activeStudent, setActiveStudent] = useState("")
-  const [fetching, setFetching] = useState(true)
-  const [activeTab, setActiveTab] = useState({ value: 0 })
-  let dtFetch = false;
-  // => {
-  //   const storedValue = localStorage.getItem("studentActiveTab");
-  //   return storedValue ? JSON.parse(storedValue) : { value: 0 };
-  // });
-
-  const setLoadingG = useLoadingStore(state => state.setLoadingG)
+  const [activeTab, setActiveTab] = useState(0)
+  const [students, setStudents] = useState([[], [], []])
+  const [showStudents, setShowStudents] = useState([[], [], []])
   let [stData, setStData] = useState([{
     found: 0,
     totalCount: 0,
@@ -35,119 +24,22 @@ const Students = () => {
     found: 0,
     totalCount: 0,
     page: 0
-  }, {
+  },
+  {
     found: 0,
     totalCount: 0,
     page: 0
   }])
 
-  const router = useRouter()
-
-  const fetchInitial = useCallback(async () => {
-    const studentsElement = document.getElementById("students")
-    const clientHeight = studentsElement.clientHeight;
-    const pagestofetch = Math.ceil(clientHeight / 700)
-    const values = pagestofetch * 20
-    let actTab;
-
-    setActiveTab(act => { actTab = act; return act })
-    // first ...
-    if (dtFetch)
-      return;
-
-    console.log("fetching")
-    dtFetch = true
-    paginate(1, values, activeTab).then((e) => {
-      setFetching(true)
-      setStudents(prevStudents => { prevStudents[activeTab.value] = e?.students; return prevStudents })
-      setShowStudents(prevStudents => { prevStudents[activeTab.value] = e?.students; return prevStudents })
-      setStData(preData => { preData[activeTab.value] = { found: e.found, totalCount: e.totalCount, page: pagestofetch }; return preData })
-      setFetching(false)
-      dtFetch = false
-      return e;
-    })
-      .catch((e) => {
-        setFetching(false)
-        dtFetch = false
-
-      })
-  }, [activeTab.value])
-
-  let isEventListenerAdded = false;
-  const handleScroll = useCallback(async () => {
-    const studentsElement = document.getElementById("students")
-    const totalHeight = studentsElement.scrollHeight
-    const heightOne = studentsElement.scrollTop
-    const heightTwo = studentsElement.clientHeight
-
-    if (totalHeight == heightOne + heightTwo) {
-
-      if (stData[activeTab.value].totalCount >= 20 * stData[activeTab.value].page) {
-        setFetching(true)
-        console.log(stData)
-        const e = await paginate(stData[activeTab.value].page + 1, 20, activeTab)
-     
-        if(!e) return ;
-        setStudents(prevStudents => {
-          { prevStudents[activeTab.value] = prevStudents[activeTab.value].concat(e?.students); return prevStudents }
-        });
-
-        setShowStudents(prevShowStudents => { prevShowStudents[activeTab.value] = prevShowStudents[activeTab.value].concat(e?.students); return prevShowStudents });
-
-        setStData(prevStData => { prevStData[activeTab.value] = { totalCount: prevStData[activeTab.value].totalCount, found: prevStData[activeTab.value].found + e.found, page: prevStData[activeTab.value].page + 1 }; return prevStData; })
-
-
-        setFetching(false)
-
-      }
-    }
-  }, [activeTab.value])
-
-
-  useEffect(() => {
-    setLoadingG(false)
-    toast.dismiss()
-console.log("yes")
-    if (students[activeTab.value].length < 1) {
-      fetchInitial()
-    }
-
-    if (!isEventListenerAdded) {
-      const studentsElement = document.getElementById("students");
-      studentsElement.addEventListener("scroll", handleScroll);
-      isEventListenerAdded = true;
-    }
-
-    return () => {
-      const studentsElement = document.getElementById("students");
-      studentsElement?.removeEventListener("scroll", handleScroll);
-      isEventListenerAdded = false;
-    };
-
-  }, [activeTab.value, setStudents])
-
   const handleActiveTab = async (e, v) => {
-    setActiveTab(preValue => ({ value: v.value }));
+    setActiveTab(preValue => v.value);
     // localStorage.setItem("studentActiveTab", JSON.stringify({value: v.value}));
   }
-
-  const token = getCookie("token");
 
   // Check if activeStudent and activeStudent.photo are defined
   const photoUrld = activeStudent?.photo && activeStudent.photo?.thumb || "https://ignou.sidsharma.in/hero5.png";
 
-  const handleActiveStudent = (e, index) => {
-    e.preventDefault();
-    // toast.success("Yes")
-    let nStudents = JSON.parse(JSON.stringify([...students]))
-    setActiveStudent(nStudents[activeTab.value][index])
-    nStudents[activeTab.value][index].css = " bg-sky-500 rounded-xl text-white"
-    nStudents[activeTab.value][index].cssGray = "text-white"
-    setShowStudents(nStudents)
-    if (document.documentElement.clientWidth < 768) {
-      router.push(`/students/${nStudents[activeTab.value][index].studentid}`)
-    }
-  }
+
 
 
   return (
@@ -174,14 +66,14 @@ console.log("yes")
 
               {/* Middle Bar */}
               <ul className={`flex mt-2 text-gray-600 dark:text-gray-400 font-bold h-12 items-end pl-4 whitespace-nowrap overflow-x-scroll ${cssi.scrollhide}`}>
-                <li className={activeTab.value == 0 ? "p-3 -pb-2 hover:dark:bg-sky-700 border-b-4 border-sky-500 rounded-t-xl cursor-pointer" : "p-3 hover:dark:bg-sky-700 rounded-t-lg cursor-pointer"}
+                <li className={activeTab == 0 ? "p-3 -pb-2 hover:dark:bg-sky-700 border-b-4 border-sky-500 rounded-t-xl cursor-pointer" : "p-3 hover:dark:bg-sky-700 rounded-t-lg cursor-pointer"}
                   onClick={e => handleActiveTab(e, { value: 0 })} value={1234}
                 >
                   Students</li>
-                <li className={activeTab.value == 1 ? "p-3 -pb-2 hover:dark:bg-sky-700 border-b-4 border-sky-500 rounded-t-xl cursor-pointer" : "p-3 hover:dark:bg-sky-700 rounded-t-lg cursor-pointer"}
+                <li className={activeTab == 1 ? "p-3 -pb-2 hover:dark:bg-sky-700 border-b-4 border-sky-500 rounded-t-xl cursor-pointer" : "p-3 hover:dark:bg-sky-700 rounded-t-lg cursor-pointer"}
                   onClick={e => { handleActiveTab(e, { value: 1 }) }}
                 >New Students</li>
-                <li className={activeTab.value == 2 ? "p-3 -pb-2 hover:dark:bg-sky-700 border-b-4 border-sky-500 rounded-t-xl cursor-pointer" : "p-3 hover:dark:bg-sky-700 rounded-t-lg cursor-pointer"}
+                <li className={activeTab == 2 ? "p-3 -pb-2 hover:dark:bg-sky-700 border-b-4 border-sky-500 rounded-t-xl cursor-pointer" : "p-3 hover:dark:bg-sky-700 rounded-t-lg cursor-pointer"}
                   onClick={e => { handleActiveTab(e, { value: 2 }) }}
                 >Top Students</li>
                 {/* <li className="p-3 hover:dark:bg-sky-700 rounded-t-lg" >Top Students</li> */}
@@ -191,36 +83,9 @@ console.log("yes")
           </div>
 
           {/* students */}
-          <div className={"flex flex-col pt-2 w-full bg-white dark:bg-sky-800 h-screen max-h-full overflow-scroll "} id="students">
-            {
-              showStudents[activeTab.value].map((e, index) => (<div href={`/students`} key={index}
-                onClick={e => { handleActiveStudent(e, index) }}
-                className={"flex border-sky-700 h-16 items-center pl-4 justify-start w-full cursor-pointer " + e?.css}
-              >
-
-                <div className="flex items-center"  >
-                  <MyImage src={e?.photo?.thumb || "https://ignou.sidsharma.in/hero5.png"}
-                    width={50} height={10}
-                    className="rounded-full"
-                    alt="photo"
-
-                  />
-                </div>
-
-                <div className="pl-3 w-full z-10"  >
-                  <div className="h-6"  >{e?.name}</div>
-                  <div className={"text-sm text-gray-600 dark:text-gray-300 overflow-hidden h-6 " + e?.cssGray} >{e?.about}</div>
-                </div>
-                <div className="flex flex-col justify-end pr-4"  >
-                  <div className="text-gray-600"  >
-                    <MdVerifiedUser className={"dark:text-gray-300 " + e?.cssGray} />
-                  </div>
-                </div>
-              </div>))
-            }
-            {fetching && <div className="flex items-center min-h-6 h-full w-full animate-bounce">Loading...</div>}
-            <div className="h-4 w-full"></div>
-          </div>
+          {activeTab == 0 && <StudentsTab setActiveStudent={setActiveStudent} students={students} setStudents={setStudents} showStudents={showStudents} setShowStudents={setShowStudents} stData={stData} setStData={setStData} />}
+          {activeTab == 1 && <NewStudentsTab setActiveStudent={setActiveStudent} students={students} setStudents={setStudents} showStudents={showStudents} setShowStudents={setShowStudents} stData={stData} setStData={setStData}/>}
+          {activeTab == 2 && <TopStudentsTab setActiveStudent={setActiveStudent} students={students} setStudents={setStudents} showStudents={showStudents} setShowStudents={setShowStudents} stData={stData} setStData={setStData}/>}
 
         </div>
 
@@ -251,7 +116,7 @@ console.log("yes")
                   <div><b>0</b> following</div>
                   <div><b>0</b> tags</div>
                 </div>
-                <div className="mt-4 font-bold">{activeStudent.name}</div>
+                <div className="mt-4 font-bold">{activeStudent?.name}</div>
                 {/* <div>{activeStudent?.email}</div> */}
 
                 <div className="text-sm">{activeStudent?.about ? activeStudent.about : (<div>
