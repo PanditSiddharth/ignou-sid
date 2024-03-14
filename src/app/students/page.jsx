@@ -6,16 +6,17 @@ import { IoIosSearch } from "react-icons/io";
 import { MdVerifiedUser } from "react-icons/md";
 import { deleteCookie, getCookie } from "cookies-next";
 import MyImage from "next/image"
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify"
 import { useLoadingStore, useStudentActiveTab } from "@/store";
 import { paginate } from "./server";
 import { useRouter } from "next/navigation";
-import InfiniteScroll from "react-infinite-scroll-component"
+
 const Students = () => {
 
   const [students, setStudents] = useState([[], [], []])
   let [showStudents, setShowStudents] = useState([[], [], []])
+  const [scroll, setScroll] = useState({})
   const [activeStudent, setActiveStudent] = useState("")
   const [fetching, setFetching] = useState(true)
   const [activeTab, setActiveTab] = useState({ value: 0 })
@@ -42,7 +43,7 @@ const Students = () => {
 
   const router = useRouter()
 
-  const fetchInitial = async () => {
+  const fetchInitial = useCallback(async () => {
     const studentsElement = document.getElementById("students")
     const clientHeight = studentsElement.clientHeight;
     const pagestofetch = Math.ceil(clientHeight / 700)
@@ -56,80 +57,74 @@ const Students = () => {
 
     console.log("fetching")
     dtFetch = true
-    paginate(1, values, activeTab.value).then((e) => {
-      if (!e) {
-        return setFetching(false)
-      }
+    paginate(1, values, activeTab).then((e) => {
       setFetching(true)
       setStudents(prevStudents => { prevStudents[activeTab.value] = e?.students; return prevStudents })
       setShowStudents(prevStudents => { prevStudents[activeTab.value] = e?.students; return prevStudents })
-      setStData(preData => { preData[activeTab.value] = { found: e.found, totalCount: e.totalCount, page: pagestofetch + 1 }; return preData })
+      setStData(preData => { preData[activeTab.value] = { found: e.found, totalCount: e.totalCount, page: pagestofetch }; return preData })
       setFetching(false)
       dtFetch = false
-      const studentsElement = document.getElementById("students")
-      studentsElement.dispatchEvent(new Event('scroll'));
-
+      return e;
     })
       .catch((e) => {
         setFetching(false)
         dtFetch = false
 
       })
-  }
-  // let isEventListenerAdded = false;
+  }, [activeTab.value])
+
+  let isEventListenerAdded = false;
+  const handleScroll = useCallback(async () => {
+    const studentsElement = document.getElementById("students")
+    const totalHeight = studentsElement.scrollHeight
+    const heightOne = studentsElement.scrollTop
+    const heightTwo = studentsElement.clientHeight
+
+    if (totalHeight == heightOne + heightTwo) {
+
+      if (stData[activeTab.value].totalCount >= 20 * stData[activeTab.value].page) {
+        setFetching(true)
+        console.log(stData)
+        const e = await paginate(stData[activeTab.value].page + 1, 20, activeTab)
+     
+        if(!e) return ;
+        setStudents(prevStudents => {
+          { prevStudents[activeTab.value] = prevStudents[activeTab.value].concat(e?.students); return prevStudents }
+        });
+
+        setShowStudents(prevShowStudents => { prevShowStudents[activeTab.value] = prevShowStudents[activeTab.value].concat(e?.students); return prevShowStudents });
+
+        setStData(prevStData => { prevStData[activeTab.value] = { totalCount: prevStData[activeTab.value].totalCount, found: prevStData[activeTab.value].found + e.found, page: prevStData[activeTab.value].page + 1 }; return prevStData; })
+
+
+        setFetching(false)
+
+      }
+    }
+  }, [activeTab.value])
+
+
   useEffect(() => {
     setLoadingG(false)
     toast.dismiss()
-
-    document.getElementById("students").scrollTop = 0;
+console.log("yes")
     if (students[activeTab.value].length < 1) {
       fetchInitial()
     }
 
-    // const handleScroll = async () => {
-    //   const studentsElement = document.getElementById("students")
-    //   const totalHeight = studentsElement.scrollHeight
-    //   const heightOne = studentsElement.scrollTop
-    //   const heightTwo = studentsElement.clientHeight
-
-    //   if (totalHeight == heightOne + heightTwo) {
-
-    //     if (stData[activeTab.value].totalCount >= (20 * stData[activeTab.value].page)) {
-    //       console.log(stData)
-    //       setFetching(true)
-    //       const e = await paginate(stData[activeTab.value].page, 20, activeTab)
-    //     if(!e)
-    //     {
-    //       return setFetching(false)
-    //     }
-    //       setStudents(prevStudents => {
-    //         { prevStudents[activeTab.value] = prevStudents[activeTab.value].concat(e?.students); return prevStudents }
-    //       });
-
-    //       setShowStudents(prevShowStudents => { prevShowStudents[activeTab.value] = prevShowStudents[activeTab.value].concat(e?.students); return prevShowStudents });
-
-    //       setStData(prevStData => { prevStData[activeTab.value] = { totalCount: prevStData[activeTab.value].totalCount, found: prevStData[activeTab.value].found + e.found, page: prevStData[activeTab.value].page + 1 }; return prevStData; })
-
-    //       setFetching(false)
-
-    //     }
-    //   }
-    // }
-
-
-    // if (!isEventListenerAdded) {
-    //   const studentsElement = document.getElementById("students");
-    //   studentsElement.addEventListener("scroll", handleScroll);
-    //   isEventListenerAdded = true;
-    // }
+    if (!isEventListenerAdded) {
+      const studentsElement = document.getElementById("students");
+      studentsElement.addEventListener("scroll", handleScroll);
+      isEventListenerAdded = true;
+    }
 
     return () => {
-
-      // const studentsElement = document.getElementById("students");
-      // studentsElement.removeEventListener("scroll", handleScroll);
-      // isEventListenerAdded = false;
+      const studentsElement = document.getElementById("students");
+      studentsElement?.removeEventListener("scroll", handleScroll);
+      isEventListenerAdded = false;
     };
-  }, [activeTab.value])
+
+  }, [activeTab.value, setStudents])
 
   const handleActiveTab = async (e, v) => {
     setActiveTab(preValue => ({ value: v.value }));
@@ -154,44 +149,6 @@ const Students = () => {
     }
   }
 
-  const handleLogout = (e) => {
-    e.preventDefault();
-    toast.dismiss()
-    toast((t) => (
-      <div>
-        <span>
-          <b>Are You sure to logout ?</b>
-        </span>
-
-        <div className="flex mt-2">
-          <button className='bg-sky-700 text-sm py-[4px] mr-1 text-white hover:bg-sky-800 px-[20px] rounded-md' onClick={() => {
-            toast.dismiss(t.id)
-            console.log("yes")
-            deleteCookie("token")
-            window.location.href = "/sign-in";
-          }}>Yes</button>
-
-          <button className='bg-sky-700 text-sm py-[4px] text-white hover:bg-sky-800 px-[20px] rounded-md' onClick={() => { toast.dismiss(t.id) }}>No</button>
-        </div>
-      </div>
-
-    ), { position: "" });
-    // localStorage.removeItem("token");
-  }
-
-  const fetchData = async () => {
-    console.log("yes its called")
-    const e = await paginate(stData[activeTab.value].page, 20, activeTab.value)
-    setStudents(prevStudents => {
-      { prevStudents[activeTab.value] = prevStudents[activeTab.value].concat(e?.students); return prevStudents }
-    });
-
-    setShowStudents(prevShowStudents => { prevShowStudents[activeTab.value] = prevShowStudents[activeTab.value].concat(e?.students); return prevShowStudents });
-
-    setStData(prevStData => { prevStData[activeTab.value] = { totalCount: prevStData[activeTab.value].totalCount, found: prevStData[activeTab.value].found + e.found, page: prevStData[activeTab.value].page + 1 }; return prevStData; })
-
-    setFetching(false)
-  }
 
   return (
     <div>
@@ -234,47 +191,36 @@ const Students = () => {
           </div>
 
           {/* students */}
-            <InfiniteScroll
-              dataLength={showStudents[activeTab.value].length} //This is important field to render the next data
-              next={fetchData}
-              hasMore={stData[activeTab.value].page * 20 < stData[activeTab.value].totalCount}
-              loader={<h4>Loading...</h4>}
-              
-              scrollableTarget="students"
+          <div className={"flex flex-col pt-2 w-full bg-white dark:bg-sky-800 h-screen max-h-full overflow-scroll "} id="students">
+            {
+              showStudents[activeTab.value].map((e, index) => (<div href={`/students`} key={index}
+                onClick={e => { handleActiveStudent(e, index) }}
+                className={"flex border-sky-700 h-16 items-center pl-4 justify-start w-full cursor-pointer " + e?.css}
               >
-          <div className={"flex flex-col pt-2 w-full bg-white dark:bg-sky-800 h-screen max-h-full overflow-scroll "} id="students" >
 
-              {
-                showStudents[activeTab.value].map((e, index) => (<div href={`/students`} key={index}
-                  onClick={e => { handleActiveStudent(e, index) }}
-                  className={"flex border-sky-700 h-16 items-center pl-4 justify-start w-full cursor-pointer " + e?.css}
-                >
+                <div className="flex items-center"  >
+                  <MyImage src={e?.photo?.thumb || "https://ignou.sidsharma.in/hero5.png"}
+                    width={50} height={10}
+                    className="rounded-full"
+                    alt="photo"
 
-                  <div className="flex items-center"  >
-                    <MyImage src={e?.photo?.thumb || "https://ignou.sidsharma.in/hero5.png"}
-                      width={50} height={10}
-                      className="rounded-full"
-                      alt="photo"
+                  />
+                </div>
 
-                    />
+                <div className="pl-3 w-full z-10"  >
+                  <div className="h-6"  >{e?.name}</div>
+                  <div className={"text-sm text-gray-600 dark:text-gray-300 overflow-hidden h-6 " + e?.cssGray} >{e?.about}</div>
+                </div>
+                <div className="flex flex-col justify-end pr-4"  >
+                  <div className="text-gray-600"  >
+                    <MdVerifiedUser className={"dark:text-gray-300 " + e?.cssGray} />
                   </div>
-
-                  <div className="pl-3 w-full z-10"  >
-                    <div className="h-6"  >{e?.name}</div>
-                    <div className={"text-sm text-gray-600 dark:text-gray-300 overflow-hidden h-6 " + e?.cssGray} >{e?.about}</div>
-                  </div>
-                  <div className="flex flex-col justify-end pr-4"  >
-                    <div className="text-gray-600"  >
-                      <MdVerifiedUser className={"dark:text-gray-300 " + e?.cssGray} />
-                    </div>
-                  </div>
-                </div>))
-              }
-
+                </div>
+              </div>))
+            }
             {fetching && <div className="flex items-center min-h-6 h-full w-full animate-bounce">Loading...</div>}
             <div className="h-4 w-full"></div>
           </div>
-            </InfiniteScroll>
 
         </div>
 

@@ -19,15 +19,15 @@ export const paginate = async (page, limit, activeTab) => {
 
     try {
         // Query the database with skip and limit
-
+        console.log(pageNumber, pageSize, activeTab)
         let students;
-        if (activeTab == 0) {
+        if (activeTab.value == 0) {
             students = (await Student.find().skip(skip).limit(pageSize)).map((e) => ({ studentid: e.studentid, name: e.name, about: e?.about || "Busy in study", photo: e?.photo }))
-        } else if (activeTab == 1) {
+        } else if (activeTab.value == 1) {
             students = (await Student.find()
                 .sort({ createdAt: -1 })
                 .skip(skip).limit(pageSize)).map((e) => ({ studentid: e.studentid, name: e.name, about: e?.about || "Busy in study", photo: e?.photo })).slice(1)
-        } else if(activeTab == 2){
+        } else if(activeTab.value == 2){
             students = (await Student.find().skip(skip).limit(pageSize)).map((e) => ({ studentid: e.studentid, name: e.name, about: e?.about || "Busy in study", photo: e?.photo }))
         }
         // console.log(students)
