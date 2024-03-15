@@ -25,7 +25,7 @@ export const paginate = async (page, limit, activeTab) => {
             students = (await Student.find().skip(skip).limit(pageSize)).map((e) => ({ studentid: e.studentid, name: e.name, about: e?.about || "Busy in study", photo: e?.photo }))
         } else if (activeTab == 1) {
             students = (await Student.find()
-                .sort({ createdAt: -1 })
+                // .sort({ createdAt: -1 })
                 .skip(skip).limit(pageSize)).map((e) => ({ studentid: e.studentid, name: e.name, about: e?.about || "Busy in study", photo: e?.photo })).slice(1)
         } else if(activeTab == 2){
             students = (await Student.find().sort({ createdAt: 1 }).skip(skip).limit(pageSize)).map((e) => ({ studentid: e.studentid, name: e.name, about: e?.about || "Busy in study", photo: e?.photo }))

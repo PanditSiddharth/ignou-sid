@@ -8,8 +8,8 @@ import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify"
 import { useLoadingStore, useStudentActiveTab } from "@/store";
 import StudentsTab from "./students";
-import TopStudentsTab from "./topStudents";
-import NewStudentsTab from "./newStudents";
+// import TopStudentsTab from "./topStudents";
+// import NewStudentsTab from "./newStudents";
 
 const Students = () => {
   const [activeStudent, setActiveStudent] = useState("")
@@ -83,9 +83,9 @@ const Students = () => {
           </div>
 
           {/* students */}
-          {activeTab == 0 && <StudentsTab setActiveStudent={setActiveStudent} students={students} setStudents={setStudents} showStudents={showStudents} setShowStudents={setShowStudents} stData={stData} setStData={setStData} />}
-          {activeTab == 1 && <NewStudentsTab setActiveStudent={setActiveStudent} students={students} setStudents={setStudents} showStudents={showStudents} setShowStudents={setShowStudents} stData={stData} setStData={setStData}/>}
-          {activeTab == 2 && <TopStudentsTab setActiveStudent={setActiveStudent} students={students} setStudents={setStudents} showStudents={showStudents} setShowStudents={setShowStudents} stData={stData} setStData={setStData}/>}
+          {activeTab == 0 && <StudentsTab setActiveStudent={setActiveStudent} students={students} setStudents={setStudents} showStudents={showStudents} setShowStudents={setShowStudents} stData={stData} setStData={setStData} mkey={activeTab} />}
+          {activeTab == 1 && <StudentsTab setActiveStudent={setActiveStudent} students={students} setStudents={setStudents} showStudents={showStudents} setShowStudents={setShowStudents} stData={stData} setStData={setStData} mkey={activeTab} />}
+          {activeTab == 2 && <StudentsTab setActiveStudent={setActiveStudent} students={students} setStudents={setStudents} showStudents={showStudents} setShowStudents={setShowStudents} stData={stData} setStData={setStData} mkey={activeTab} />}
 
         </div>
 
