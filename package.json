@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@preact/signals-react": "^2.0.0",
     "axios": "^1.6.7",
     "compressorjs": "^1.2.1",
     "cookies-next": "^4.1.1",
