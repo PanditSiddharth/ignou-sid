@@ -3,315 +3,100 @@ import Link from "next/link";
 import cssi from "./my.module.css"
 import { IoMenu } from "react-icons/io5";
 import { IoIosSearch } from "react-icons/io";
-import { MdVerifiedUser } from "react-icons/md";
-import { deleteCookie, getCookie } from "cookies-next";
-import jwt from "jsonwebtoken";
 import MyImage from "next/image"
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify"
-import Head from "next/head";
 import { useLoadingStore } from "@/store";
-const SellerInfo = () => {
-const setLoadingG = useLoadingStore(state => state.setLoadingG)
+import SellersTab from "./sellers";
+// import TopSellersTab from "./topSellers";
+// import NewSellersTab from "./newSellers";
 
-useEffect(()=> {
-  setLoadingG(false)
-  setLoaded("loaded")
+const Sellers = () => {
+  const [activeSeller, setActiveSeller] = useState("")
+  const [activeTab, setActiveTab] = useState(0)
+  const [sellers, setSellers] = useState([[], [], []])
+  const setLoadingG = useLoadingStore(state => state.setLoadingG)
+  const [showSellers, setShowSellers] = useState([[], [], []])
+  let [stData, setStData] = useState([{
+    found: 0,
+    totalCount: 0,
+    page: 0
+  }, {
+    found: 0,
+    totalCount: 0,
+    page: 0
+  },
+  {
+    found: 0,
+    totalCount: 0,
+    page: 0
+  }])
 
-}, [])
-  let topSellers = [
-    {
-      sellerid: 1161460654,
-      name: "Sid 1",
-      css: "bg-sky-500 rounded-xl",
-      photo: [
-        {
-          url: 'https://postimg.cc/rdWjdBRZ/bb8dc752',
-          urld: 'https://i.postimg.cc/rdWjdBRZ/sid.jpg',
-          quality: 'sm'
-        },
-        {
-          url: 'https://postimg.cc/phHZKsDW/4dca179b',
-          urld: 'https://i.postimg.cc/phHZKsDW/sid.jpg',
-          quality: 'md'
-        }
-      ],
-      about: "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Dolor rerum sapiente, ipsa culpa ab amet incidunt "
-    },
-    {
-      sellerid: 1161460654,
-      name: "Sid 2",
-      photo: [
-        {
-          url: 'https://postimg.cc/rdWjdBRZ/bb8dc752',
-          urld: 'https://i.postimg.cc/rdWjdBRZ/sid.jpg',
-          quality: 'sm'
-        },
-        {
-          url: 'https://postimg.cc/phHZKsDW/4dca179b',
-          urld: 'https://i.postimg.cc/phHZKsDW/sid.jpg',
-          quality: 'md'
-        }
-      ],
-      about: " Lorem, ipsum dolor sit amet consectetur adipisicing elit. Dolor rerum sapiente, ipsa culpa ab amet incidunt ullam aperiam, quia officiis sit? Tempora quidem quas illum asperiores dolores, eum non corrupti."
-    },
-    {
-      sellerid: 1161460654,
-      name: "Sid 3",
-      photo: [
-        {
-          url: 'https://postimg.cc/rdWjdBRZ/bb8dc752',
-          urld: 'https://i.postimg.cc/rdWjdBRZ/sid.jpg',
-          quality: 'sm'
-        },
-        {
-          url: 'https://postimg.cc/phHZKsDW/4dca179b',
-          urld: 'https://i.postimg.cc/phHZKsDW/sid.jpg',
-          quality: 'md'
-        }
-      ],
-      about: " Lorem, ipsum dolor sit amet consectetur adipisicing elit. Dolor rerum sapiente, ipsa culpa ab amet incidunt ullam aperiam, quia officiis sit? Tempora quidem quas illum asperiores dolores, eum non corrupti."
-    },
-    {
-      sellerid: 1161460654,
-      name: "Sid 4",
-      photo: [
-        {
-          url: 'https://postimg.cc/rdWjdBRZ/bb8dc752',
-          urld: 'https://i.postimg.cc/rdWjdBRZ/sid.jpg',
-          quality: 'sm'
-        },
-        {
-          url: 'https://postimg.cc/phHZKsDW/4dca179b',
-          urld: 'https://i.postimg.cc/phHZKsDW/sid.jpg',
-          quality: 'md'
-        }
-      ],
-      about: " Lorem, ipsum dolor sit amet consectetur adipisicing elit. Dolor rerum sapiente, ipsa culpa ab amet incidunt ullam aperiam, quia officiis sit? Tempora quidem quas illum asperiores dolores, eum non corrupti."
-    },
-    {
-      sellerid: 1161460654,
-      name: "Sid 1",
-      photo: [
-        {
-          url: 'https://postimg.cc/rdWjdBRZ/bb8dc752',
-          urld: 'https://i.postimg.cc/rdWjdBRZ/sid.jpg',
-          quality: 'sm'
-        },
-        {
-          url: 'https://postimg.cc/phHZKsDW/4dca179b',
-          urld: 'https://i.postimg.cc/phHZKsDW/sid.jpg',
-          quality: 'md'
-        }
-      ],
-      about: "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Dolor rerum sapiente, ipsa culpa ab amet incidunt "
-    },
-    {
-      sellerid: 1161460654,
-      name: "Sid 2",
-      photo: [
-        {
-          url: 'https://postimg.cc/rdWjdBRZ/bb8dc752',
-          urld: 'https://i.postimg.cc/rdWjdBRZ/sid.jpg',
-          quality: 'sm'
-        },
-        {
-          url: 'https://postimg.cc/phHZKsDW/4dca179b',
-          urld: 'https://i.postimg.cc/phHZKsDW/sid.jpg',
-          quality: 'md'
-        }
-      ],
-      about: " Lorem, ipsum dolor sit amet consectetur adipisicing elit. Dolor rerum sapiente, ipsa culpa ab amet incidunt ullam aperiam, quia officiis sit? Tempora quidem quas illum asperiores dolores, eum non corrupti."
-    },
-    {
-      sellerid: 1161460654,
-      name: "Sid 3",
-      photo: [
-        {
-          url: 'https://postimg.cc/rdWjdBRZ/bb8dc752',
-          urld: 'https://i.postimg.cc/rdWjdBRZ/sid.jpg',
-          quality: 'sm'
-        },
-        {
-          url: 'https://postimg.cc/phHZKsDW/4dca179b',
-          urld: 'https://i.postimg.cc/phHZKsDW/sid.jpg',
-          quality: 'md'
-        }
-      ],
-      about: " Lorem, ipsum dolor sit amet consectetur adipisicing elit. Dolor rerum sapiente, ipsa culpa ab amet incidunt ullam aperiam, quia officiis sit? Tempora quidem quas illum asperiores dolores, eum non corrupti."
-    },
-    {
-      sellerid: 1161460654,
-      name: "Sid 4",
-      photo: [
-        {
-          url: 'https://postimg.cc/rdWjdBRZ/bb8dc752',
-          urld: 'https://i.postimg.cc/rdWjdBRZ/sid.jpg',
-          quality: 'sm'
-        },
-        {
-          url: 'https://postimg.cc/phHZKsDW/4dca179b',
-          urld: 'https://i.postimg.cc/phHZKsDW/sid.jpg',
-          quality: 'md'
-        }
-      ],
-      about: " Lorem, ipsum dolor sit amet consectetur adipisicing elit. Dolor rerum sapiente, ipsa culpa ab amet incidunt ullam aperiam, quia officiis sit? Tempora quidem quas illum asperiores dolores, eum non corrupti."
-    },
-    {
-      sellerid: 1161460654,
-      name: "Sid 5",
-      photo: [
-        {
-          url: 'https://postimg.cc/rdWjdBRZ/bb8dc752',
-          urld: 'https://i.postimg.cc/rdWjdBRZ/sid.jpg',
-          quality: 'sm'
-        },
-        {
-          url: 'https://postimg.cc/phHZKsDW/4dca179b',
-          urld: 'https://i.postimg.cc/phHZKsDW/sid.jpg',
-          quality: 'md'
-        }
-      ],
-      about: " Lorem, ipsum dolor sit amet consectetur adipisicing elit. Dolor rerum sapiente, ipsa culpa ab amet incidunt ullam aperiam, quia officiis sit? Tempora quidem quas illum asperiores dolores, eum non corrupti."
-    },
-    {
-      sellerid: 1161460654,
-      name: "Sid 4",
-      photo: [
-        {
-          url: 'https://postimg.cc/rdWjdBRZ/bb8dc752',
-          urld: 'https://i.postimg.cc/rdWjdBRZ/sid.jpg',
-          quality: 'sm'
-        },
-        {
-          url: 'https://postimg.cc/phHZKsDW/4dca179b',
-          urld: 'https://i.postimg.cc/phHZKsDW/sid.jpg',
-          quality: 'md'
-        }
-      ],
-      about: " Lorem, ipsum dolor sit amet consectetur adipisicing elit. Dolor rerum sapiente, ipsa culpa ab amet incidunt ullam aperiam, quia officiis sit? Tempora quidem quas illum asperiores dolores, eum non corrupti."
-    },
-  ]
-
-  const sellers = topSellers;
-  const newSellers = topSellers;
-
-  const token = getCookie("token");
-  let decoded = jwt.decode(token);
-
-  if (!decoded) {
-    decoded = {
-      sellerid: 1161460654,
-      name: "Sid 1",
-      photo: [
-        {
-          url: 'https://postimg.cc/rdWjdBRZ/bb8dc752',
-          urld: 'https://i.postimg.cc/rdWjdBRZ/sid.jpg',
-          quality: 'sm'
-        },
-        {
-          url: 'https://postimg.cc/phHZKsDW/4dca179b',
-          urld: 'https://i.postimg.cc/phHZKsDW/sid.jpg',
-          quality: 'md'
-        }
-      ]
-    }
-  }
-  let [loaded, setLoaded] = useState("")
-  const login = "yes"
-
-  // Check if decoded and decoded.photo are defined
-  const photoUrld = decoded?.photo && decoded.photo[1]?.urld;
-
-  const handleLogout = (e) => {
-    e.preventDefault();
-    toast.dismiss()
-    toast((t) => (
-      <div>
-        <span>
-          <b>Are You sure to logout ?</b>
-        </span>
-
-        <div className="flex mt-2">
-          <button className='bg-sky-700 text-sm py-[4px] mr-1 text-white hover:bg-sky-800 px-[20px] rounded-md' onClick={() => {
-            toast.dismiss(t.id)
-            console.log("yes")
-            deleteCookie("token")
-            window.location.href = "/sign-in";
-          }}>Yes</button>
-
-          <button className='bg-sky-700 text-sm py-[4px] text-white hover:bg-sky-800 px-[20px] rounded-md' onClick={() => { toast.dismiss(t.id) }}>No</button>
-        </div>
-      </div>
-
-    ), { position: "" });
-    // localStorage.removeItem("token");
+  const handleActiveTab = async (e, v) => {
+    setActiveTab(preValue => v.value);
+    // localStorage.setItem("sellerActiveTab", JSON.stringify({value: v.value}));
   }
 
+  // Check if activeSeller and activeSeller.photo are defined
+  const photoUrld = activeSeller?.photo && activeSeller.photo?.thumb || "https://ignou.sidsharma.in/hero5.png";
 
+  useEffect(()=> {
+    setLoadingG(false)
+  }, [])
 
+  useEffect(()=> {
+    console.log(activeSeller)
+  }, [activeSeller])
   return (
     <div>
 
       {/* Main */}
-      <div className="flex text-black dark:text-white">
+      <div className="flex text-black dark:text-white h-screen w-full fixed">
 
         {/* Left side */}
-        <div className="w-full md:w-1/3 bg-gray-100 dark:bg-sky-800 min-h-[90vh] border-r dark:border-r-0 pt-1">
+        <div className="w-full md:w-1/3 bg-gray-100 dark:bg-sky-800 overflow-y-hidden border-r dark:border-r-0 pt-1 h-screen">
 
-          {/* Top bar */}
-          <div className="flex flex-col">
-            <div className="flex items-center h-12">
-              <IoMenu className="w-8 h-8 dark:text-white pl-2 " />
-              <div className="w-full mx-3 flex">
-                <IoIosSearch className="w-5 h-8 dark:text-white absolute mt-1 ml-2" />
-                <input type="text" className="rounded-full bg-gray-100 dark:text-white dark:bg-sky-900 h-10 w-full pl-8 active:border-none focus:outline-blue-500 focus:outline-2 outline outline-1 outline-gray-300 dark:outline-none"
-                  placeholder="Search"
-                />
+          <div className="h-[6.7rem]">
+            {/* Top bar */}
+            <div className="flex flex-col">
+              <div className="flex items-center h-12">
+                <IoMenu className="w-8 h-8 dark:text-white pl-2 " />
+                <div className="w-full mx-3 flex">
+                  <IoIosSearch className="w-5 h-8 dark:text-white absolute mt-1 ml-2" />
+                  <input type="text" className="rounded-full bg-gray-100 dark:text-white dark:bg-sky-900 h-10 w-full pl-8 active:border-none focus:outline-blue-500 focus:outline-2 outline outline-1 outline-gray-300 dark:outline-none"
+                    placeholder="Search"
+                  />
+                </div>
               </div>
-            </div>
 
-            {/* Middle Bar */}
-            <ul className={`flex mt-2 text-gray-600 dark:text-gray-400 font-bold h-12 items-end pl-4 whitespace-nowrap ${cssi.scrollhide}`}>
-              <li className="p-3 -pb-2 hover:dark:bg-sky-700 border-b-4 border-sky-500 rounded-t-xl">Sellers</li>
-              <li className="p-3 hover:dark:bg-sky-700 rounded-t-lg" >New Sellers</li>
-              <li className="p-3 hover:dark:bg-sky-700 rounded-t-lg" >Top Sellers</li>
-              <li className="p-3 hover:dark:bg-sky-700 rounded-t-lg">Fovriout Sellers</li>
-            </ul>
-            <div className="w-full bg-gray-300 dark:bg-sky-900 h-[1px] dark:h-[2px]"></div>
-            {/* Sellers */}
-            <div className="flex flex-col pt-2 w-full h-[70vh] overflow-auto">
-              {
-                sellers.map((e, index) => (<Link href={`/sellers/${e.sellerid}`} key={index}
-                  className={"flex border-sky-700 h-16 items-center pl-4 justify-start w-full " + e.css}
+              {/* Middle Bar */}
+              <ul className={`flex mt-2 text-gray-600 dark:text-gray-400 font-bold h-12 items-end pl-4 whitespace-nowrap overflow-x-scroll ${cssi.scrollhide}`}>
+                <li className={activeTab == 0 ? "p-3 -pb-2 hover:dark:bg-sky-700 border-b-4 border-sky-500 rounded-t-xl cursor-pointer" : "p-3 hover:dark:bg-sky-700 rounded-t-lg cursor-pointer"}
+                  onClick={e => handleActiveTab(e, { value: 0 })} value={1234}
                 >
-                  <div className="flex items-center">
-                    <MyImage src={e.photo[0].urld}
-                      width={50} height={10}
-                      className="rounded-full"
-                      alt="photo"
-                    />
-                  </div>
-                  <div className="pl-3 w-full">
-                    <div className="h-6">{e.name}</div>
-                    <div className="text-sm text-gray-600 dark:text-gray-300 overflow-hidden h-6">{e.about}</div>
-                  </div>
-                  <div className="flex flex-col justify-end pr-4">
-                    <div className="text-gray-600">
-                      <MdVerifiedUser className="dark:text-gray-300" />
-                    </div>
-                    <div className=""></div>
-                  </div>
-                </Link>))
-              }
+                  Sellers</li>
+                <li className={activeTab == 1 ? "p-3 -pb-2 hover:dark:bg-sky-700 border-b-4 border-sky-500 rounded-t-xl cursor-pointer" : "p-3 hover:dark:bg-sky-700 rounded-t-lg cursor-pointer"}
+                  onClick={e => { handleActiveTab(e, { value: 1 }) }}
+                >New Sellers</li>
+                <li className={activeTab == 2 ? "p-3 -pb-2 hover:dark:bg-sky-700 border-b-4 border-sky-500 rounded-t-xl cursor-pointer" : "p-3 hover:dark:bg-sky-700 rounded-t-lg cursor-pointer"}
+                  onClick={e => { handleActiveTab(e, { value: 2 }) }}
+                >Top Sellers</li>
+                {/* <li className="p-3 hover:dark:bg-sky-700 rounded-t-lg" >Top Sellers</li> */}
+              </ul>
+              <div className="w-full bg-gray-300 dark:bg-sky-900 h-[1px] dark:h-[2px] relative z-30"></div>
             </div>
           </div>
+
+          {/* sellers */}
+          {activeTab == 0 && <SellersTab setActiveSeller={setActiveSeller} sellers={sellers} setSellers={setSellers} showSellers={showSellers} setShowSellers={setShowSellers} stData={stData} setStData={setStData} mkey={activeTab} />}
+          {activeTab == 1 && <SellersTab setActiveSeller={setActiveSeller} sellers={sellers} setSellers={setSellers} showSellers={showSellers} setShowSellers={setShowSellers} stData={stData} setStData={setStData} mkey={activeTab} />}
+          {activeTab == 2 && <SellersTab setActiveSeller={setActiveSeller} sellers={sellers} setSellers={setSellers} showSellers={showSellers} setShowSellers={setShowSellers} stData={stData} setStData={setStData} mkey={activeTab} />}
 
         </div>
 
         {/* Right side */}
-        <div className="md:w-2/3 h-[90vh]hidden md:block">
-          {loaded ? <div className="flex flex-col h-[90vh] relative bottom-4">
+        <div className="md:w-2/3 hidden md:block h-screen overflow-hidden">
+          {activeSeller ? <div className="flex flex-col h-[90vh] relative bottom-4">
             <div className="hidden md:flex items-center flex-col md:flex-row  w-full" >
               {/* Image */}
               <div className="w-80 h-80 flex items-center justify-center">
@@ -324,22 +109,23 @@ useEffect(()=> {
               <div className="text-black dark:text-white">
                 <div className="text-2xl flex space-x-14">
                   <div className="-pl-[1px]">
-                    {decoded?.sellerid}
+                    {activeSeller?.sellerid}
                   </div>
-                  <button className='bg-sky-500 text-sm py-[6px] text-white hover:bg-sky-800 px-[20px] rounded-md whitespace-nowrap' >See more</button>
-
+                  <Link href={`/sellers/${activeSeller?.sellerid}`}>
+                    <button className='bg-sky-500 text-sm py-[6px] text-white hover:bg-sky-800 px-[20px] rounded-md whitespace-nowrap' >See more</button>
+                  </Link>
                 </div>
 
                 <div className="text-gray-700 mt-6 flex space-x-8 dark:text-gray-400">
                   <div> <b>0</b> posts</div>
-                  <div><b>0</b> followers</div>
+                  <div><b>0</b> following</div>
                   <div><b>0</b> tags</div>
                 </div>
-                <div className="mt-4 font-bold">{decoded.name}</div>
-                {/* <div>{decoded?.email}</div> */}
+                <div className="mt-4 font-bold">{activeSeller?.name}</div>
+                {/* <div>{activeSeller?.email}</div> */}
 
-                <div className="text-sm">{decoded?.about ? decoded.about : (<div>
-                  Selling content here since  <br />
+                <div className="text-sm">{activeSeller?.about ? activeSeller.about : (<div>
+                  Busy in study...  <br />
                 </div>)}</div>
                 <div className="flex space-x-2 my-1">
 
@@ -350,7 +136,7 @@ useEffect(()=> {
             </div>
             <div className="w-full md:flex justify-center hidden">
               <div className="flex flex-col w-4/5 space-x-6">
-                <h5 className="text-2xl font-bold">Status</h5>
+                <h5 className="text-2xl font-bold">My Courses</h5>
                 <div className="flex">
 
                   {
@@ -370,4 +156,4 @@ useEffect(()=> {
   )
 }
 
-export default SellerInfo
+export default Sellers

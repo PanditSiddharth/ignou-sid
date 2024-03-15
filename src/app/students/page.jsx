@@ -6,7 +6,7 @@ import { IoIosSearch } from "react-icons/io";
 import MyImage from "next/image"
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify"
-import { useLoadingStore, useStudentActiveTab } from "@/store";
+import { useLoadingStore } from "@/store";
 import StudentsTab from "./students";
 // import TopStudentsTab from "./topStudents";
 // import NewStudentsTab from "./newStudents";
@@ -15,6 +15,7 @@ const Students = () => {
   const [activeStudent, setActiveStudent] = useState("")
   const [activeTab, setActiveTab] = useState(0)
   const [students, setStudents] = useState([[], [], []])
+  const setLoadingG = useLoadingStore(state => state.setLoadingG)
   const [showStudents, setShowStudents] = useState([[], [], []])
   let [stData, setStData] = useState([{
     found: 0,
@@ -39,7 +40,9 @@ const Students = () => {
   // Check if activeStudent and activeStudent.photo are defined
   const photoUrld = activeStudent?.photo && activeStudent.photo?.thumb || "https://ignou.sidsharma.in/hero5.png";
 
-
+  useEffect(()=> {
+    setLoadingG(false)
+  }, [])
 
 
   return (
