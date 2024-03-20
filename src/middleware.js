@@ -39,6 +39,7 @@ export async function middleware(request) {
 export const config = {
     matcher: ['/', 
     '/profile/:path*', 
+    '/api/:path*', 
     '/sign-in', 
     '/sign-up', 
     '/apimail',

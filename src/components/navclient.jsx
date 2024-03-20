@@ -6,20 +6,25 @@ import { IoMenu } from 'react-icons/io5';
 import { FaUser, FaUserPlus } from 'react-icons/fa';
 import Logo from './logo';
 import { useLoadingStore, useUserG, useUserStore } from '@/store';
-import MyImage from "next/image"
-import {useRouter, usePathname} from 'next/navigation';
-import museRouter from 'next/router';
-import { getCookie } from 'cookies-next';
+import { useRouter, usePathname } from 'next/navigation';
 import { FaUserCircle } from "react-icons/fa";
 import { toast } from 'react-toastify';
+import { GoHome } from "react-icons/go"
+import { PiStudent } from "react-icons/pi";
+import { CgProfile } from "react-icons/cg";
+import { RiServiceLine } from "react-icons/ri";
+import { MdOutlineInfo } from "react-icons/md";
+import { FiMenu } from "react-icons/fi";
+import { RiCustomerService2Line } from "react-icons/ri";
+import { LiaLuggageCartSolid } from "react-icons/lia";
+import cssi from "./css.module.css"
 
 const NavebarClient = (props) => {
-  const router = useRouter()
+  const router = useRouter() 
   const pathname = usePathname()
-  const [hideit, setHideIt] = useState(["/sellers", "/students", "/products"].includes(pathname) ? true : false)
-  // const [login, setLogin] = useState(props?.cookie)
 
   const [login, setUserG] = useUserG(props?.cookie)
+  console.log(login)
   let setLoadingG = useLoadingStore(state => state.setLoadingG)
   let [menuVisibility, setMenuVisibility] = useState("yes");
   // login = 
@@ -39,30 +44,26 @@ const NavebarClient = (props) => {
       setLoadingG(true)
       router.push(e.target.id)
     } else {
-      toast.info(<div className='p-2 bg-white rounded-2xl'>Already on it</div>, {duration: 50})
+      toast.info(<div className='p-2 bg-white rounded-2xl'>Already on it</div>, { duration: 50 })
     }
   }
-  
-  useEffect(()=> {
-    if(["/sellers", "/students", "/products"].includes(pathname))
-    setHideIt(true)
-    else 
-    setHideIt(false)
-  }, [pathname])
+
+  const specialPath = /\/sellers(?!\/)|\/students(?!\/)|\/products(?!\/)/.test(pathname);
+  const specialPath1 = /\/sellers|\/students/.test(pathname);
 
   const handleChildClick = (e) => {
     // Traverse up the DOM tree until the parent button element is found
     let target = e.target;
     while (target !== null && target.tagName !== 'BUTTON') {
-        target = target.parentElement;
+      target = target.parentElement;
     }
 
     // If the parent button element is found, retrieve its ID
     if (target !== null) {
-        handleRoute({target})
-        // Now you can use the buttonId as needed
+      handleRoute({ target })
+      // Now you can use the buttonId as needed
     }
-};
+  };
   const toggleMenu = () => {
     setMenuVisibility(!menuVisibility);
   };
@@ -73,14 +74,6 @@ const NavebarClient = (props) => {
       toggleMenu();
     }
   };
-
-  // useEffect(() => {
-  //   if (!getCookie("token"))
-  //     setLogin("")
-  //   if (!Array.isArray(loggedIn)) {
-  //     setLogin(loggedIn)
-  //   }
-  // }, [loggedIn])
 
   useEffect(() => {
     // Add event listener when the component mounts
@@ -93,13 +86,15 @@ const NavebarClient = (props) => {
   }, [menuVisibility]); // Re-run effect when isActive changes
 
   return (
-   !hideit && <header className="body-font shadow-md bg-white sticky z-50 top-0 h-14 flex items-center justify-between px-2 md:px-7 dark:bg-sky-900 antialiased">
+    <header className={`body-font shadow-md bg-white sticky z-50 top-0 h-14 items-center justify-between px-2 md:px-7 dark:bg-sky-900 antialiased ${specialPath ? "hidden" : (specialPath1 ? "flex sm:hidden" : "flex")}`}>
+
+
       {/* Logo */}
       <button id='/' onClick={handleChildClick} className="flex title-font font-medium items-center text-sky-800 hover:cursor-pointer">
         {/* <Image src="/sid.jpg" className='rounded-full border-4 border-sky-950' width={40} height={42} alt='Logo' /> */}
         <Logo css1="w-12 h-12" />
         <span className="text-xl font-extrabold text-sky-800 hover:text-sky-950 dark:text-gray-400 dark:hover:text-gray-500">IGNOU-X</span>
-        
+
       </button>
 
       {/* Navigation */}
@@ -112,26 +107,77 @@ const NavebarClient = (props) => {
       {/* Navigation */}
       <nav className={`${menuVisibility ? 'hidden' : ''} fixed z-50 bg-white top-14 rounded-lg right-0 w-[100%] sm:w-[60%] h-[100%] dark:bg-sky-900 flex flex-col items-center md:hidden`}>
 
-        <div className='w-full flex flex-col items-center text-gray-700 dark:text-white'>
-          {login && <div className={`mr-5 hover:font-bold cursor-pointer`}
-            onClick={e => login ? (login.sellerid ? router.push(`/sellers/${login.sellerid}`) : router.push(`/students/${login.studentid}`)) : router.push(`/sign-in`)}
-          >Profile</div>}
-          {navigations.map((e, index)=> (
-            <button id={e.href} key={index} className="mr-5 hover:font-bold hover:cursor-pointer " onClick={handleRoute}>{e.name}</button>
-          ))}
+        <div className='w-full flex flex-col items-center text-gray-700 dark:text-white h-full'>
+
+          <div className={"flex flex-col min-h-[22rem] h-[30rem] justify-evenly text-sky-950 dark:text-gray-100 w-full py-8 "} >
+            {login && <Link className="flex space-x-2 items-center py-3 border-b dark:border-sky-800 pl-10 border-gray-100"
+              href={login.studentid ? `/students/${login.studentid}` : `/sellers/${login.sellerid}`}
+              onClick={e => handleRoute({ ...e, target: { ...e.target, id: login.studentid ? `/students/${login.studentid}` : `/sellers/${login.sellerid}` } })}
+            >
+              <img
+                src={login?.photo?.thumb || `https://ui-avatars.com/api/?name=${login.name || "L O L"}&background=random`}
+                width={32} height={32}
+                className="w-8 h-8 rounded-full" />
+              <h5 className="text-xl">Profile</h5>
+            </Link>}
+            <Link className="flex space-x-2 items-center py-3 border-b dark:border-sky-800 pl-10 border-gray-100"
+              href={"/"}
+              onClick={e => handleRoute({ ...e, target: { ...e.target, id: "/" } })}
+            >
+              <GoHome className="w-8 h-8" />
+              <h5 className="text-xl">Home</h5>
+            </Link>
+            <Link
+              onClick={e => handleRoute({ ...e, target: { ...e.target, id: "/products" } })}
+              className="flex space-x-2 items-center py-3 border-b dark:border-sky-800 pl-10 border-gray-100" href="/products">
+              <LiaLuggageCartSolid className="w-8 h-8" />
+              <h5 className="text-xl">Products</h5>
+            </Link>
+            <Link
+              onClick={e => handleRoute({ ...e, target: { ...e.target, id: "/students" } })}
+              className="flex space-x-2 items-center py-3 border-b dark:border-sky-800 pl-10 border-gray-100" href="/students">
+              <PiStudent className="w-8 h-8" />
+              <h5 className="text-xl">Students</h5>
+            </Link>
+            <Link
+              onClick={e => handleRoute({ ...e, target: { ...e.target, id: "/sellers" } })}
+              className="flex space-x-2 items-center py-3 border-b dark:border-sky-800 pl-10 border-gray-100" href="/sellers">
+              <CgProfile className="w-8 h-8" />
+              <h5 className="text-xl">Sellers</h5>
+            </Link>
+            <Link
+              onClick={e => handleRoute({ ...e, target: { ...e.target, id: "/services" } })}
+              className="flex space-x-2 items-center py-3 border-b dark:border-sky-800 pl-10 border-gray-100" href="/services">
+              <RiServiceLine className="w-8 h-8" />
+              <h5 className="text-xl">Services</h5>
+            </Link>
+            <Link
+              onClick={e => handleRoute({ ...e, target: { ...e.target, id: "/about" } })}
+              className="flex space-x-2 items-center py-3 border-b dark:border-sky-800 pl-10 border-gray-100" href="/about">
+              <MdOutlineInfo className="w-8 h-8" />
+              <h5 className="text-xl">About</h5>
+            </Link>
+            <Link
+              onClick={e => handleRoute({ ...e, target: { ...e.target, id: "/contact" } })}
+              className="flex space-x-2 items-center py-3 border-b dark:border-sky-800 pl-10 border-gray-100" href="/contact">
+              <RiCustomerService2Line className="w-8 h-8" />
+              <h5 className="text-xl">Contact</h5>
+            </Link>
+
+          </div>
         </div>
 
         {!login && <div className={`flex space-x-1`}>
-       
-            <button id='/sign-up' onClick={handleChildClick} className="inline-flex items-center bg-sky-800 border-0 py-[5px] px-3 focus:outline-2 hover:bg-sky-950 rounded text-white mt-4 md:mt-0 space-x-1 text-sm ">
-              <FaUserPlus  />
-              <div >Signup</div>
-            </button>
 
-            <button id='/sign-in' onClick={handleChildClick} className="inline-flex items-center bg-sky-800 border-0 py-[5px] px-3 md:mr-0 mr-1 focus:outline-none hover:bg-sky-950 rounded text-white mt-4 md:mt-0 text-sm space-x-1 ">
-              <FaUser className='text-sm w-[10px]' />
-              <div >Signin</div>
-            </button>
+          <button id='/sign-up' onClick={handleChildClick} className="inline-flex items-center bg-sky-800 border-0 py-[5px] px-3 focus:outline-2 hover:bg-sky-950 rounded text-white mt-4 md:mt-0 space-x-1 text-sm ">
+            <FaUserPlus />
+            <div >Signup</div>
+          </button>
+
+          <button id='/sign-in' onClick={handleChildClick} className="inline-flex items-center bg-sky-800 border-0 py-[5px] px-3 md:mr-0 mr-1 focus:outline-none hover:bg-sky-950 rounded text-white mt-4 md:mt-0 text-sm space-x-1 ">
+            <FaUser className='text-sm w-[10px]' />
+            <div >Signin</div>
+          </button>
         </div>}
 
       </nav>
@@ -145,20 +191,24 @@ const NavebarClient = (props) => {
 
       {/* Auth */}
       {login ? (
-        login.photo ? <img src={`${login?.photo?.thumb}`} width={50} height={50} className='w-8 h-8 rounded-full hidden md:block' id={`/sellers/${login.sellerid}`} onClick={handleRoute} /> : <FaUserCircle className='w-7 h-7 rounded-full hidden md:flex text-gray-400 bg-white border-0 outline-none dark:bg-gray-200 dark:text-sky-700 shadow-none' id={`/students/${login.studentid}`} onClick={handleRoute} />) : <div className={`hidden md:flex space-x-1`}>
-    
-          <button  id='/sign-up' onClick={handleChildClick} className="inline-flex items-center bg-sky-800 border-0 py-[5px] px-3 focus:outline-2 hover:bg-sky-950 rounded text-white mt-4 md:mt-0 space-x-1 text-sm ">
+        login.photo ? <img src={`${login?.photo?.thumb}`} width={50} height={50} className='w-8 h-8 rounded-full hidden md:block' id={login.sellerid ? `/sellers/${login.sellerid}` : `/students/${login.studentid}`} onClick={handleRoute} /> : <FaUserCircle className='w-7 h-7 rounded-full hidden md:flex text-gray-400 bg-white border-0 outline-none dark:bg-gray-200 dark:text-sky-700 shadow-none' id={login.sellerid ? `/sellers/${login.sellerid}` : `/students/${login.studentid}`} onClick={handleRoute} />)
+
+        :
+
+        <div className={`hidden md:flex space-x-1`}>
+
+          <button id='/sign-up' onClick={handleChildClick} className="inline-flex items-center bg-sky-800 border-0 py-[5px] px-3 focus:outline-2 hover:bg-sky-950 rounded text-white mt-4 md:mt-0 space-x-1 text-sm ">
             <FaUserPlus />
             <div >Signup</div>
           </button>
-   
-  
+
+
           <button id='/sign-in' onClick={handleChildClick} className="inline-flex items-center bg-sky-800 border-0 py-[5px] px-3 md:mr-0 mr-1 focus:outline-none hover:bg-sky-950 rounded text-white mt-4 md:mt-0 text-sm space-x-1 ">
             <FaUser className='text-sm w-[10px]' />
             <div  >Signin</div>
           </button>
-     
-      </div>}
+
+        </div>}
     </header>
   )
 }

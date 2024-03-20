@@ -10,12 +10,12 @@ import MyImage from "next/image";
 import cssi from "./my.module.css"
 
 let fetchG = false;
-const StudentsTab = ({
-  setActiveStudent,
-  students,
-  setStudents,
-  showStudents,
-  setShowStudents,
+const CategoriesTab = ({
+  setActiveCategory,
+  categories,
+  setCategories,
+  showCategories,
+  setShowCategories,
   stData,
   setStData,
   mkey
@@ -29,9 +29,9 @@ const StudentsTab = ({
   const [clientHeight, setClientHeight] = useState(0);
 
   const fetchInitial = async () => {
-    const studentsElement = document.getElementById("students");
+    const categoriesElement = document.getElementById("categories");
     // Update clientHeight state for potential re-usage in calculations
-    const clientHeight = studentsElement.clientHeight
+    const clientHeight = categoriesElement.clientHeight
 
     const pagestofetch = Math.ceil(clientHeight / 700)
     const values = pagestofetch * 20;
@@ -40,12 +40,12 @@ const StudentsTab = ({
     paginate(1, values, mkey)
       .then((e) => {
         if (!e) {
-          console.log(e, "Students"); // Handle potential errors gracefully
+          console.log(e, "Categories"); // Handle potential errors gracefully
           return;
         }
 
-        setStudents((prevStudents) => ({ ...prevStudents, [mkey]: e?.students })); // Update nested state using spread syntax
-        setShowStudents((prevStudents) => ({ ...prevStudents, [mkey]: e?.students }));
+        setCategories((prevCategories) => ({ ...prevCategories, [mkey]: e?.categories })); // Update nested state using spread syntax
+        setShowCategories((prevCategories) => ({ ...prevCategories, [mkey]: e?.categories }));
         setStData((preData) => ({
           ...preData,
           [mkey]: { found: e.found, totalCount: e.totalCount, page: pagestofetch },
@@ -78,14 +78,14 @@ const StudentsTab = ({
 
         const updateStates = async () => {
           return new Promise(resolve => {
-            setStudents(prevStudents => ({
-              ...prevStudents,
-              [mkey]: prevStudents[mkey].concat(e?.students),
+            setCategories(prevCategories => ({
+              ...prevCategories,
+              [mkey]: prevCategories[mkey].concat(e?.categories),
             }));
 
-            setShowStudents(prevShowStudents => ({
-              ...prevShowStudents,
-              [mkey]: prevShowStudents[mkey].concat(e?.students),
+            setShowCategories(prevShowCategories => ({
+              ...prevShowCategories,
+              [mkey]: prevShowCategories[mkey].concat(e?.categories),
             }));
 
             setStData(prevStData => ({
@@ -112,25 +112,25 @@ const StudentsTab = ({
     } catch (err) {
       fetchG = false
     }
-  }, [students])
+  }, [categories])
 
-  const handleActiveStudent = (e, index) => {
+  const handleActiveCategory = (e, index) => {
     e.preventDefault();
-    const updatedStudents = JSON.parse(JSON.stringify(students[mkey])); // Create a copy to avoid mutation
+    const updatedCategories = JSON.parse(JSON.stringify(categories[mkey])); // Create a copy to avoid mutation
 
-    updatedStudents[index].css = " bg-sky-500 rounded-xl text-white";
-    updatedStudents[index].cssGray = "text-white";
+    updatedCategories[index].css = " bg-sky-500 rounded-xl text-white";
+    updatedCategories[index].cssGray = "text-white";
 
-    setActiveStudent(updatedStudents[index]);
-    setShowStudents({ ...showStudents, [mkey]: updatedStudents });
+    setActiveCategory(updatedCategories[index]);
+    setShowCategories({ ...showCategories, [mkey]: updatedCategories });
 
     if (document.documentElement.clientWidth < 768) {
-      router.push(`/students/${updatedStudents[index].studentid}`);
+      router.push(`/categories/${updatedCategories[index].name}`);
     }
   };
 
   return (
-    <div className={"flex flex-col pt-2 w-full bg-gray-50 dark:bg-sky-800 overflow-auto"} id="students" style={{ height: 'calc(100vh - 6.7rem)' }} >
+    <div className={"flex flex-col pt-2 w-full bg-gray-50 dark:bg-sky-800 overflow-auto"} id="categories" style={{ height: 'calc(100vh - 6.7rem)' }} >
       <InfiniteScroll
         pageStart={0}
         initialLoad={false}
@@ -145,9 +145,9 @@ const StudentsTab = ({
         style={{ height: 'calc(100vh - 6.7rem)' }}
       >
         {
-          showStudents[mkey] ? showStudents[mkey].map((e, index) => (
-            <div href={`/students`} key={index}
-              onClick={e => { handleActiveStudent(e, index) }}
+          showCategories[mkey] ? showCategories[mkey].map((e, index) => (
+            <div href={`/categories`} key={index}
+              onClick={e => { handleActiveCategory(e, index) }}
               className={"flex border-sky-700 h-16 items-center pl-4 justify-start w-full cursor-pointer " + e?.css}
             >
 
@@ -171,10 +171,10 @@ const StudentsTab = ({
             </div>
           )) : <div>Check your internet connection</div>
         }
-        {stData[mkey].totalCount < (stData[mkey].page * 20) && <div className='h-24 w-full text-center'>No more students</div>}
+        {stData[mkey].totalCount < (stData[mkey].page * 20) && <div className='h-24 w-full text-center'>No more categories</div>}
       </InfiniteScroll>
     </div>
   )
 };
 
-export default StudentsTab;
+export default CategoriesTab;

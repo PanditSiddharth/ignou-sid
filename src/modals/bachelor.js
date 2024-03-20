@@ -1,6 +1,7 @@
-import { Schema, models, model } from 'mongoose';
+import pkg from 'mongoose';
+let { Schema, models, model } = pkg;
 
-const TagSchema = new Schema({
+const BachelorSchema = new Schema({
     name: {
         type: String,
         required: true,
@@ -24,6 +25,6 @@ const TagSchema = new Schema({
     }
 });
 
-const Tag = models.tags || model('tags', TagSchema);
+const Bachelor = models.bachelors || model('bachelors', BachelorSchema);
 
-export default Tag;
+export default Bachelor;

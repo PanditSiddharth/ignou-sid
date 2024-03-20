@@ -16,6 +16,8 @@ import axios from "axios";
 import { useRouter } from 'next/navigation';
 import { useLoadingStore, useUserStore } from '@/store';
 import { getId, compress, startResend } from './client';
+import { FcGoogle } from "react-icons/fc";
+import { signIn } from "next-auth/react"
 
 const Signup = () => {
 
@@ -134,10 +136,11 @@ const Signup = () => {
                     "district": f.get("district"),
                     "address": f.get("address"),
                     "account": f.get("account"),
+                    "phone": f.get("phone"),
                     "ifsc": f.get("ifsc")
                 }
             }
-            
+
             for (const [key, value] of Object.entries(user)) {
                 if (!value) {
                     toast.error(key + " is required");
@@ -154,10 +157,15 @@ const Signup = () => {
 
 
             user.userid = getId()
-
+            const about = f.get("about")
+            if(about)
+            user.about = about;
             user.photo = f.get("photo")
             user.who = f.get("who")
-            if (!user.photo?.name)
+            if(user.who == "student"){
+                user.phone = f.get("phone");
+            }
+            if (!user?.photo?.name)
                 user.photo = false;
 
             setUsr(user)
@@ -221,16 +229,16 @@ const Signup = () => {
                 const fileData = fileRes.data;
                 setUploading(70)
                 if (fileData.success) {
-                    usr.photo = await saveFile({ ...JSON.parse(JSON.stringify(fileData)), name: usr.photo.name })
+                    usr.photo = await saveFile({ ...JSON.parse(JSON.stringify(fileData)), name: usr?.photo?.name })
                 } else {
                     usr.photo = await savePhoto(formData)
                 }
 
                 setUploading(85)
 
-                if (!usr?.photo || usr.photo?.error) {
+                if (!usr?.photo || usr?.photo?.error) {
                     setUploading(0)
-                    return toast.error(usr.photo.error || "Error in saving photo")
+                    return toast.error(usr?.photo?.error || "Error in saving photo")
                 }
             }
 
@@ -257,7 +265,8 @@ const Signup = () => {
             }
         } catch (error) {
             toast.dismiss();
-            toast.error(error.message)
+            console.log(error)
+            toast.error(error?.message)
             setUploading(0)
         }
     }
@@ -381,8 +390,9 @@ const Signup = () => {
                                     className="border-b-2 border-gray-500 w-11/12 bg-white px-3 text-black leading-tight focus:outline-none focus:shadow-outline" />
                                 <div className='w-1/12'>
                                     <div className='relative w-full h-4 mt-1'>
-                                        <NextImage src="/India.svg" alt="India"
-                                            fill={true}
+                                        <img src="/India.svg" alt="India"
+                                            width={16} height={16}
+                                            className="w-full h-4"
                                         />
                                     </div>
                                 </div>
@@ -464,7 +474,6 @@ const Signup = () => {
 
                         {/* 6th row about */}
                         <div className={`mx-5`}>
-                            {/* <label htmlFor="about" className='block text-gray-700 text-sm font-bold my-1'>Enter about yourself</label> */}
                             <textarea
                                 name="about"
                                 placeholder="Enter something about yourself"
@@ -509,13 +518,29 @@ const Signup = () => {
                                 </div>
 
                             </form>) : (
-                            <><div className='flex flex-row w-full justify-center items-center text-gray-700 py-2'>
-                                <div className='bg-gray-700 h-[1px] w-1/3'><br /></div>
-                                <div className='mx-7'>or</div>
-                                <div className='bg-gray-700 h-[1px] w-1/3'><br /></div>
-                            </div>
+                            <>
+                                <div className='flex flex-row w-full justify-center items-center text-gray-700 py-2'>
+                                    <div className='bg-gray-700 h-[1px] w-1/3'><br /></div>
+                                    <div className='mx-7'>or</div>
+                                    <div className='bg-gray-700 h-[1px] w-1/3'><br /></div>
+                                </div>
+
+                                {/* Google authentication */}
+                                <div className='flex flex-row w-full justify-center space-x-1 text-sm items-center text-gray-700 pb-3'>
+                                    <div className='flex font-bold space-x-1 items-center bg-gray-200 rounded-lg py-1 px-2 cursor-pointer'
+                                    onClick={e=>{
+                                        toast.loading("Please wait...")
+                                        signIn("google", {callbackUrl: "/sign-up/password"})}}
+                                    >
+                                        <FcGoogle className='w-6 h-6' />
+                                        <div className=''>
+                                            Students sign-up with google
+                                        </div>
+                                    </div>
+                                </div>
 
                                 <div className='flex flex-row w-full justify-center space-x-1 text-sm items-center text-gray-700 pb-3'>
+
                                     {/* <TelegramLogin /> */}
                                     <div>Already registered ? </div>
                                     <button className='text-sky-600 hover:underline' onClick={handleRoute} id={`/sign-in`}>Login</button>

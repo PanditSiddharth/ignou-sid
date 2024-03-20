@@ -5,15 +5,17 @@ import React, { useEffect } from 'react'
 import { toast } from 'react-toastify'
 import server from "./server"
 import { setCookie } from 'cookies-next'
-import {useRouter} from 'next/navigation'
-import {useLoadingStore, useUserStore} from '@/store'
+import { useRouter } from 'next/navigation'
+import { useLoadingStore, useUserStore } from '@/store'
+import { signIn } from 'next-auth/react';
+import { FcGoogle } from 'react-icons/fc'
 
 const Signin = () => {
   const router = useRouter()
   const setUserG = useUserStore(state => state.setUserG)
-  const setLoadingG = useLoadingStore(state => state.setLoadingG) 
-  
-  useEffect(()=> {
+  const setLoadingG = useLoadingStore(state => state.setLoadingG)
+
+  useEffect(() => {
     toast.dismiss()
     setLoadingG(false)
   }, [])
@@ -25,7 +27,7 @@ const Signin = () => {
       setLoadingG(true)
       router.push(e.target.id)
     } else {
-      toast.info(<div className='p-2 bg-white rounded-2xl'>Already on it</div>, {duration: 50})
+      toast.info(<div className='p-2 bg-white rounded-2xl'>Already on it</div>, { duration: 50 })
     }
   }
 
@@ -41,18 +43,18 @@ const Signin = () => {
       return toast.error("Password must be at least 4 characters")
     }
 
-    if(!who)
-     return toast.error("Please select for which you want to Login (seller or student)")
-    
+    if (!who)
+      return toast.error("Please select for which you want to Login (seller or student)")
+
 
     const res = await server({ email, password, who })
-    if (!res || res.error ) {
+    if (!res || res.error) {
       return toast.error(res.error || "Something went wrong")
     }
 
-    if(!res.token)
-    return toast.error("Error in signing in")
-    
+    if (!res.token)
+      return toast.error("Error in signing in")
+
     setCookie("token", res.token)
     setUserG(res.user)
     setLoadingG(true)
@@ -119,6 +121,21 @@ const Signin = () => {
           <div className='mx-7'>or</div>
           <div className='bg-gray-700 h-[1px] w-1/4'><br /></div>
         </div>
+        {/* Google authentication */}
+        <div className='flex flex-row w-full justify-center space-x-1 text-sm items-center text-gray-700 pb-3'>
+          <div className='flex font-bold space-x-1 items-center bg-gray-200 rounded-lg py-1 px-2 cursor-pointer'
+            onClick={e => {
+              toast.loading("Please wait...")
+              signIn("google", { callbackUrl: "/sign-in/verify" })
+            }}
+          >
+            <FcGoogle className='w-6 h-6' />
+            <div className=''>
+              Students sign-in with google
+            </div>
+          </div>
+        </div>
+
         <div className='flex flex-row w-full justify-center space-x-1 text-sm items-center text-gray-700 pb-3'>
           {/* <TelegramLogin /> */}
           <div>Not have account ? </div>

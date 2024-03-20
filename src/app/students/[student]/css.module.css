@@ -1,0 +1,10 @@
+.showup {
+    margin-bottom: 0rem;
+}
+
+
+@media (min-height: 1200px) {
+    .showup {
+        margin-bottom: 5rem !important;
+    }
+}

@@ -8,7 +8,8 @@ export const useUserStore = create((set) => ({
   setUserG: (user) => set((state) =>   {
     const token = getCookie("token")
     if(!user || !token)
-      return {loggedIn: Array.isArray(state?.loggedIn) ? state?.loggedIn.push("false") : ["false"]}
+      return {loggedIn: [false]};
+    else
     return { loggedIn: user }})
 }))
 

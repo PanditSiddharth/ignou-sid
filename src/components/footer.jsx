@@ -5,9 +5,10 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 const Footer = () => {
   const pathname = usePathname()
-  const [hideit, setHideIt] = useState(["/sellers", "/students", "/products"].includes(pathname) ? true : false)
+  const [hideit, setHideIt] = useState(/\/sellers.*|\/students.*|\/products/.test(pathname) ? true : false)
+  
   useEffect(()=> {
-    if(["/sellers", "/students", "/products"].includes(pathname))
+    if (/\/sellers.*|\/students.*|\/products/.test(pathname))
     setHideIt(true)
     else 
     setHideIt(false)

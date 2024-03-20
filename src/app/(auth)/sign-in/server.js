@@ -31,8 +31,10 @@ const server = async (e) => {
             const student = await Student.findOne({email: e.email?.toLowerCase()?.trim()})
             if(!student)
                 return ({ error: "User not found" })
-            if(student.password!= e.password)
+            if(student.password!= e.password){
+                if(!student.photo || student.photo.url != e.image)
                 return ({ error: "Password is incorrect" })
+            }
                 const nStudent = JSON.parse(JSON.stringify(student))
             const token = jwt.sign(nStudent, process.env.JWT_TOKEN, { expiresIn: "20d" })
             return { token, userid: nStudent.studentid, user: nStudent }
