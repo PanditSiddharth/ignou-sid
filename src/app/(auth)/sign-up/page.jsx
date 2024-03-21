@@ -162,7 +162,7 @@ const Signup = () => {
             user.about = about;
             user.photo = f.get("photo")
             user.who = f.get("who")
-            if(user.who == "student"){
+            if(user.who == "student" && f.get("phone")){
                 user.phone = f.get("phone");
             }
             if (!user?.photo?.name)
@@ -170,12 +170,12 @@ const Signup = () => {
 
             setUsr(user)
 
-            new Promise(res => setTimeout(a => res(toast.loading("Sending otp...", { duration: 8000 })), 0))
+            new Promise(res => setTimeout(a => res(toast.loading("Sending otp to email...", { duration: 8000 })), 0))
             let xhtpRes = await makePost({ "email": user.email, "name": user.name })
             setXhtp(xhtpRes?.xhtp)
             toast.dismiss()
             setHaveOtp("yes")
-            toast.success("Plase enter otp we sent you", { duration: 4000 })
+            toast.success("Plase enter otp we sent your email", { duration: 4000 })
             startResend(resend, setResend)
         } catch (err) {
             console.error("Error in client", err.message)

@@ -88,7 +88,6 @@ const NavebarClient = (props) => {
   return (
     <header className={`body-font shadow-md bg-white sticky z-50 top-0 h-14 items-center justify-between px-2 md:px-7 dark:bg-sky-900 antialiased ${specialPath ? "hidden" : (specialPath1 ? "flex sm:hidden" : "flex")}`}>
 
-
       {/* Logo */}
       <button id='/' onClick={handleChildClick} className="flex title-font font-medium items-center text-sky-800 hover:cursor-pointer">
         {/* <Image src="/sid.jpg" className='rounded-full border-4 border-sky-950' width={40} height={42} alt='Logo' /> */}

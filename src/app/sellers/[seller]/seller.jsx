@@ -9,7 +9,13 @@ import { FaUserCircle } from "react-icons/fa";
 import { deleteId } from "./server";
 import Link from "next/link";
 import Sidebar from "@/components/sidebar";
-
+import { FaPlus } from "react-icons/fa6";
+import { BsThreeDots } from "react-icons/bs";
+import { BiMessageRoundedDots } from "react-icons/bi";
+import { BsPostcardHeart } from "react-icons/bs";
+import { FaWhatsapp } from "react-icons/fa6";
+import { FaTelegram } from "react-icons/fa6";
+import { RxCross2 } from "react-icons/rx";
 
 const SellerClient = (props) => {
 
@@ -22,7 +28,9 @@ const SellerClient = (props) => {
     gbl = useUserG(props?.login);
     login = gbl[0];
     setUserG = gbl[1];
-  } 
+  }
+
+  const [hiden, setHiden] = useState("hidden")
 
   // else 
   // var [login, setUserG ] = useState(props?.login)
@@ -102,78 +110,177 @@ const SellerClient = (props) => {
     // localStorage.removeItem("token");
   }
 
+
+  const more = () => {
+    return (<div className={`absolute top-20 bg-sky-300 dark:text-sky-900 w-40 pb-2 rounded-md ${hiden}`}>
+
+      <div className="flex justify-between bg-sky-500 rounded-t-md p-2 font-bold">
+        <div>IGNOU-X</div>
+        <RxCross2 className="w-6 h-6 text-sky-700 font-extrabold cursor-pointer" onClick={(e => setHiden("hidden"))} />
+      </div>
+
+      <div className="">
+
+        <div className="pl-3 py-1 border-b border-sky-400 cursor-pointer">Generate Referal</div>
+        {props?.gbl?.sellerid == login?.sellerid ? <div className="pl-3 py-1 border-b border-sky-400 cursor-pointer" onClick={handleLogout}>Logout</div> : <Link href={`https://telegram.me/share/url?url=https://ignou.sidsharma.in/sellers/${login?.sellerid}&text=See ignou products of ${login?.name}. this is good and cheap`} target="_blank" className="whitespace-nowrap flex items-center space-x-1 pl-3 py-1 border-b border-sky-400 cursor-pointer">
+          <FaTelegram className="w-5 h-5 text-sky-300 bg-sky-800 rounded-full" />
+          <div>
+            Share
+          </div></Link>}
+
+        {login?.sellerid == props?.gbl?.sellerid ? <div className="pl-3 py-1 cursor-pointer" onClick={handleDelete}>Delete</div> : <Link href={`whatsapp://send?text=See ignou products of ${login?.name} at https://ignou.sidsharma.in/sellers/${login?.sellerid}. This is good and cheap.`} target="_blank" className="whitespace-nowrap flex items-center space-x-1 pl-3 py-1 border-b border-sky-400 cursor-pointer">
+          <FaWhatsapp className="w-5 h-5" />
+          <div>
+            Share
+          </div></Link>}
+      </div>
+    </div>)
+  }
+
   return (
-    <div className="w-full h-screen max-w-full">
-      <div className="flex w-full h-full text-sky-900 dark:text-white">
+    <div className="w-full max-w-full">
+      <div className="flex w-full text-sky-900 dark:text-white">
 
         {/* Left side */}
         <div className="sm:flex w-14 lg:min-w-72 hidden h-full">
-        <Sidebar gbl={props?.gbl} />
+          <Sidebar gbl={props?.gbl} />
         </div>
 
         {/* Right Side */}
-        <div className="w-full overflow-x-hidden ">
-          {login ? <div className="flex flex-col h-[90vh] relative bottom-4">
-            <div className="flex items-center flex-col md:flex-row  w-full" >
-              {/* Image */}
-              <div className="w-80 h-80 flex items-center justify-center">
-                <div className='w-40 h-40 relative '>
-                  {/* Ensure photoUrld is defined before using it */}
-                  {photoUrld && <img className="border-4 w-40 h-40 border-sky-500 rounded-full" src={photoUrld} alt="Photo" />}
-                </div>
+        <div className="w-full overflow-x-hidden  xl:flex xl:justify-center">
+          <div className="w-full xl:max-w-[900px]">
+            <div className="flex md:hidden w-full dark:bg-sky-800 p-3 font-bold text-2xl dark:text-gray-400">{"ID: " + login?.sellerid}</div>
+
+            {/* Photo */}
+            <div className="flex rounded-full px-3 md:px-4">
+
+              {/* Main Photo */}
+              <div className="flex items-center h-40 w-40 md:h-60 md:w-60 ">
+                <img src={photoUrld} className="rounded-full w-28 h-28 md:w-40 md:h-40 p-[2px] border-4 border-sky-700" alt="logo" />
+                {props?.gbl?.sellerid == login?.sellerid && <FaPlus className="w-6 h-6 md:w-9 md:h-9 relative top-9 right-8 md:top-12 p-[5px] md:p-2 md:right-10 bg-blue-700 rounded-full border-2 border-gray-200 dark:border-sky-800 text-gray-200" />}
               </div>
 
-              <div className="text-black dark:text-white">
-                <div className="text-2xl flex space-x-14">
-                  <div className="-pl-[1px]">
-                    {login?.sellerid}
+              {/* Name  */}
+              <div className="flex py-4 dark:text-gray-300 flex-col justify-center space-y-1">
+                <div className="flex space-x-7 items-center">
+                  <h3 className="flex text-2xl font-extrabold whitespace-nowrap">{"@ " + login?.sellerid}</h3>
+                  <div className="space-x-1 hidden md:flex w-56">
+                    {login?.sellerid == props?.gbl?.sellerid ? <button onClick={e => toast.info("Still working on it")} className="bg-sky-700 text-gray-200  dark:text-gray-200 rounded-md p-1 w-1/2">Edit</button> :
+                      <Link href={`https://telegram.me/share/url?url=https://ignou.sidsharma.in/sellers/${login?.sellerid}&text=See ignou products of ${login?.name}. this is good and cheap`} target="_blank" className="bg-sky-700 text-gray-200  dark:text-gray-200 rounded-md p-1 w-1/2 whitespace-nowrap overflow-ellipsis overflow-hidden flex items-center space-x-1 px-3">                      <FaTelegram className="w-5 h-5 text-sky-700 bg-gray-200 rounded-full" />
+                        <div>
+                          Share
+                        </div></Link>}
+                    {login.sellerid == props?.gbl?.sellerid ? <button onClick={handleLogout} className="bg-sky-700 text-gray-200 dark:text-gray-200 rounded-md p-1 w-1/2">Logout</button> :
+                      <Link href={`whatsapp://send?text=See ignou products of ${login?.name} at https://ignou.sidsharma.in/sellers/${login?.sellerid}. This is good and cheap.`} target="_blank" className="bg-sky-700 text-gray-200  dark:text-gray-200 rounded-md p-1 w-1/2 whitespace-nowrap overflow-ellipsis overflow-hidden flex items-center space-x-1 px-3">
+                        <FaWhatsapp className="w-5 h-5" />
+                        <div>
+                          Share
+                        </div></Link>}
                   </div>
-                  <Link href={`/sellers/${login?.sellerid}`}>
-                    <button className='bg-sky-500 text-sm py-[6px] text-white hover:bg-sky-800 px-[20px] rounded-md whitespace-nowrap' >See more</button>
-                  </Link>
+                  <BsThreeDots onClick={e => setHiden("")}
+                    className={"cursor-pointer"}
+                  />
                 </div>
 
-                <div className="text-gray-700 mt-6 flex space-x-8 dark:text-gray-400">
-                  <div> <b>0</b> posts</div>
-                  <div><b>0</b> following</div>
-                  <div><b>0</b> tags</div>
+                {/* Posts  */}
+                <div className=" py-2 mt-1 md:flex justify-between max-w-72 hidden">
+                  <div className="flex items-center space-x-2" >
+                    <div className="text-lg">{0}</div>
+                    <div className="dark:text-gray-400">posts</div>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="text-lg">{0}</div>
+                    <div className="dark:text-gray-400">views</div>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="text-lg">{0}</div>
+                    <div className="dark:text-gray-400">Sold</div>
+                  </div>
                 </div>
-                <div className="mt-4 font-bold">{login?.name}</div>
-                {/* <div>{login?.email}</div> */}
 
-                <div className="text-sm">{login?.about ? login.about : (<div>
-                  Busy in study...  <br />
-                </div>)}</div>
-                <div className="flex space-x-2 my-1">
-
-                  {login?.password ? <div>
-                    <button className='bg-sky-700 text-sm py-[6px] text-white hover:bg-sky-800 px-[20px] mr-1 rounded-md' onClick={handleDelete}>Delete</button>
-                    <button className='bg-sky-700 text-sm py-[6px] text-white hover:bg-sky-800 px-[20px] rounded-md' onClick={handleLogout}>Logout</button>
-                  </div> :
-                    <button className='bg-sky-700 text-sm py-[6px] text-white hover:bg-sky-800 px-[20px] rounded-md' onClick={e => { toast.success("Test: Added to favourit") }}>Follow (Add Favourit)</button>
-                  }
+                <div className="md:block hidden">
+                  <h3 className="font-extrabold text-2xl dark:text-gray-200">{login?.name}</h3>
+                  <div className="text-sm text-gray-400">IGNOU Seller</div>
+                  <h5 className="text-sm dark:text-gray-200">{login?.about || "No about"}</h5>
                 </div>
-              </div>
-            </div>
-            <div className="w-full md:flex justify-center hidden">
-              <div className="flex flex-col w-4/5 space-x-6">
-                <h5 className="text-2xl font-bold">My Courses</h5>
-                <div className="flex">
 
-                  {
-                    [0, 1, 2].map((e, index) => (
-                      <div className="flex flex-col items-center space-y-2 mx-[1px]" key={index}>
-                        <div className="w-32 h-32 rounded bg-sky-600"></div>
+                <div className={"space-x-1 flex md:hidden min-w-48 max-w-64"}>
+                  {login?.sellerid == props?.gbl?.sellerid ? <button onClick={e => toast.info("Still working on it")} className="bg-sky-700 text-gray-200  dark:text-gray-200 rounded-md p-1 w-1/2">Edit</button> :
+                    <Link href={`https://telegram.me/share/url?url=https://ignou.sidsharma.in/sellers/${login?.sellerid}&text=See ignou products of ${login?.name}. this is good and cheap`} target="_blank" className="bg-sky-700 text-gray-200  dark:text-gray-200 rounded-md p-1 w-1/2 whitespace-nowrap overflow-ellipsis overflow-hidden flex items-center space-x-1 px-3">                      <FaTelegram className="w-5 h-5" />
+                      <div>
+                        Share
+                      </div></Link>}
+
+                  {login.sellerid == props?.gbl?.sellerid ? <button onClick={handleDelete} className="bg-sky-700 text-gray-200  dark:text-gray-200  rounded-md p-1 w-1/2">Logout</button> :
+                    <Link href={`whatsapp://send?text=See ignou products of ${login?.name} at https://ignou.sidsharma.in/sellers/${login?.sellerid}. This is good and cheap.`} target="_blank" className="bg-sky-700 text-gray-200  dark:text-gray-200 rounded-md p-1 w-1/2 whitespace-nowrap overflow-ellipsis overflow-hidden flex items-center space-x-1 px-3">
+                      <FaWhatsapp className="w-5 h-5" />
+                      <div>
+                        Share
                       </div>
-                    ))
-                  }
+                    </Link>}
                 </div>
+                <button className="bg-sky-700 text-gray-200  dark:text-gray-200  rounded-md p-1 w-full md:hidden text-center" onClick={e => setHiden("")}>More</button>
+                {more()}
+
+              </div>
+
+            </div>
+
+            {/* Some details in less than md screen */}
+            <div className="px-3 block md:hidden">
+              <h3 className="font-extrabold text-2xl dark:text-gray-300 md:text-xl">{login?.name}</h3>
+              <div className="text-gray-400">IGNOU Seller</div>
+              <h5 className="dark:text-gray-200">{login?.about || "No about"}</h5>
+            </div>
+
+            {/* Status photos */}
+            <div className="flex space-x-2 space-y-1 p-3 w-full overflow-auto">
+              {[0, 1, 2].map((ele, index) => (
+                <div key={index} className="">
+                  <div key={index} className="rounded-full w-20 md:w-28 h-20 md:h-28 bg-sky-700">
+                  </div>
+                  <div className="w-full flex justify-center">
+                    hi
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Posts  */}
+            <div className="md:hidden border-y-[1px] border-sky-700 py-2 mt-1 flex justify-evenly">
+              <div className="flex flex-col items-center">
+                <div className="text-lg">{0}</div>
+                <div className="dark:text-gray-400">posts</div>
+              </div>
+              <div className="flex flex-col items-center">
+                <div className="text-lg">{0}</div>
+                <div className="dark:text-gray-400">views</div>
+              </div>
+              <div className="flex flex-col items-center">
+                <div className="text-lg">{0}</div>
+                <div className="dark:text-gray-400">Sold</div>
               </div>
             </div>
-          </div> : null}
+
+            <div className="text-gray-300 flex justify-evenly items-center border-t border-gray-300 dark:border-sky-700 w-full md:mt-5 bg-gray-200 dark:bg-sky-900">
+              <BsPostcardHeart className="w-28 h-14 py-2 px-10 text-blue-600 border-t-4 border-sky-700" />
+              <BiMessageRoundedDots className="w-28 h-14 py-2 px-10 text-gray-400" />
+            </div>
+
+            {/* Grid of posts */}
+            <div className=" min-h-52">
+              <div className="grid grid-cols-3 gap-2 ">
+                {[1, 2, 3, 4, 5, 6, 7].map(post => (
+
+                  <img src={photoUrld} alt="post" className="w-full" />
+                ))}
+              </div>
+
+            </div>
+
+          </div>
         </div>
       </div>
-
     </div>
   );
 };

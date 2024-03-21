@@ -6,6 +6,7 @@ import axios from 'axios';
 import { useLoadingStore } from '@/store';
 import { compress, getId } from './client';
 import { saveFile, saveThumb, saveData } from './server';
+import Sidebar from '@/components/sidebar';
 
 const AddProductClient = (props) => {
     const [mstate, setMstate] = useState("")
@@ -205,9 +206,13 @@ const AddProductClient = (props) => {
     };
 
     return (
-        <section className='h-[93vh] flex items-center'>
-            <div className={`flex my-8 w-full`}>
+        <section className='h-[calc(100vh-4rem)] max-h-screen flex items-center'>
+                {/* Left side */}
+                <div className="sm:flex w-14 lg:min-w-72 hidden h-full bg-white dark:bg-sky-900 text-sky-950 dark:text-stone-50">
+                    <Sidebar gbl={props?.gbl} css1={`h-[calc(100vh-3.5rem)]`} />
+                </div>
 
+            <div className={`flex my-8 w-full`}>
                 {uploading != 0 && <div className='fixed flex justify-center w-full top-8 z-50'>
                     <div className='w-52 h-12 bg-white rounded-lg flex items-center px-2'>
                         <div className='h-12 w-12 flex items-center'>
@@ -364,7 +369,7 @@ const AddProductClient = (props) => {
 
                             >Add product</button>
                             <div className='bg-sky-900 text-sm py-[6px] text-white hover:bg-sky-950 px-[20px] rounded-md cursor-pointer ml-2'
-                            onClick={resetForm}
+                                onClick={resetForm}
                             >Reset Form</div>
                         </div>
                     </form>

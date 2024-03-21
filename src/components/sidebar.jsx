@@ -28,11 +28,12 @@ const Sidebar = (props) => {
     }
 
     return (
-        <div className="fixed sm:flex justify-between w-14 lg:min-w-72 hidden h-full" >
+        <div className={`fixed sm:flex justify-between w-14 lg:min-w-72 hidden h-full ${props?.css1}`} >
 
             <div className="w-full h-full lg:pl-10 flex flex-col justify-between items-center lg:items-start">
                 <Link href="/"
                     onClick={e => handleRoute({ ...e, path: "/" })}
+                    className={props?.css1 ? "hidden": ""}
                 >
                     <h2 className="font-bold text-sky-600 text-3xl mt-5 py-8 hidden lg:block" >IGNOU-X</h2>
                     <h2 className="font-bold text-sky-600 text-3xl mt-5 py-8 block lg:hidden" >IX</h2>

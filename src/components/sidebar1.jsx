@@ -47,8 +47,10 @@ const Sidebar = (props) => {
         <div className={`fixed flex justify-between min-w-72 h-full bg-gray-200 dark:bg-sky-900 z-30 ${props.hiden} `} onClick={e=> props.setHiden("hidden")} id={"hide"}>
 
             <div className="w-full h-full pl-10 flex flex-col justify-between items-start">
-                <div className="relative w-full bg-white">
-            <RxCross2 className="absolute right-2 top-2 w-6 h-6" onClick={(e=> props.setHiden("hidden"))}/>
+                <div className="relative w-full">
+                    <div className="absolute right-2 top-2 w-7 h-7 bg-red-300 opacity-70 dark:bg-sky-800 flex items-center justify-center">
+            <RxCross2 className="w-6 h-6 text-sky-500 font-extrabold " onClick={(e=> props.setHiden("hidden"))}/>
+                    </div>
                 </div>
                 <Link href="/"
                     onClick={e => handleRoute({ ...e, path: "/" })}
