@@ -297,6 +297,7 @@ const Signup = () => {
                         </div>
                     </div>
                 </div>}
+                
 
                 <div className={`w-full md:w-[7in] mx-5 md:mx-auto bg-white border rounded-md border-sky-900 space-y-1`}>
 

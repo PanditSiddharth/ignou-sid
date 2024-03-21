@@ -60,7 +60,7 @@ const SellerClient = (props) => {
     try {
       setProgress(4)
       const selectedImage = await handleImageChange(e);
-      console.log(e)
+     
       setProgress(20)
 
       const file = e.target.files[0];
