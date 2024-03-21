@@ -6,6 +6,7 @@ import Loader from "@/components/loader";
 import { ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import SessionProvider from "@/components/SessionProvider";
+import Progress from "@/components/progress";
 export const metadata = {
   title: "IGNOU products buy and sell",
   description: "IGNOU trusted plateform for buy and sell guess paper, notes, assignments",
@@ -15,6 +16,7 @@ export default async function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={`bg-gray-200 dark:bg-sky-900`}>
+        <Progress />
         <ToastContainer
           position="top-center"
           autoClose={2000}

@@ -22,7 +22,7 @@ const Signin = () => {
 
   const handleRoute = (e) => {
     // e.preventDefault();
-    console.log(e.target)
+  
     if (window.location.pathname != e.target.id) {
       setLoadingG(true)
       router.push(e.target.id)

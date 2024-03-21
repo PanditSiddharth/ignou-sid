@@ -40,7 +40,7 @@ const StudentsClient = (props) => {
 
   // Check if activeStudent and activeStudent.photo are defined
   const photoUrld = (activeStudent?.photo?.thumb ? activeStudent.photo?.thumb : `https://ui-avatars.com/api/?name=${activeStudent?.name || "L O L"}&background=random`)
-console.log(photoUrld)
+
  
 useEffect(()=> {
     setLoadingG(false)

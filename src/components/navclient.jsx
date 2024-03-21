@@ -24,7 +24,7 @@ const NavebarClient = (props) => {
   const pathname = usePathname()
 
   const [login, setUserG] = useUserG(props?.cookie)
-  console.log(login)
+
   let setLoadingG = useLoadingStore(state => state.setLoadingG)
   let [menuVisibility, setMenuVisibility] = useState("yes");
   // login = 
@@ -39,7 +39,7 @@ const NavebarClient = (props) => {
 
   const handleRoute = (e) => {
     // e.preventDefault();
-    console.log(e.target)
+    
     if (window.location.pathname != e.target.id) {
       setLoadingG(true)
       router.push(e.target.id)

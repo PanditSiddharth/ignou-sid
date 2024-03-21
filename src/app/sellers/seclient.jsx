@@ -40,7 +40,6 @@ const SellersClient = (props) => {
 
   // Check if activeSeller and activeSeller.photo are defined
   const photoUrld = (activeSeller?.photo?.thumb ? activeSeller.photo?.thumb : `https://ui-avatars.com/api/?name=${activeSeller?.name || "L O L"}&background=random`)
-console.log(photoUrld)
  
 useEffect(()=> {
     setLoadingG(false)

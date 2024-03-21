@@ -78,7 +78,7 @@ const SellerClient = (props) => {
         <div className="flex mt-2">
           <button className='bg-sky-700 text-sm py-[4px] mr-1 text-white hover:bg-sky-800 px-[20px] rounded-md' onClick={async () => {
             toast.dismiss(t.id)
-            console.log("yes")
+        
             setLoadingG(true)
             const deleted = await deleteId({ studentid: login.studentid, email: login.email })
             if (deleted.error) {

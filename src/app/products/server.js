@@ -20,7 +20,7 @@ export const paginate = async (page, limit, activeTab) => {
 
     try {
         // Query the database with skip and limit
-        console.log(pageNumber, pageSize, activeTab)
+
         let categories;
         if (activeTab == 0) {
             categories = (await Bachelor.find().skip(skip).limit(pageSize)).map((e) => ({ name: e.name, description: e.description || e.name, thumbnail: e?.thumbnail }))

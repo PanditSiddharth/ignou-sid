@@ -1,12 +1,12 @@
 "use client"
-import { useLoadingStore, useUserG } from "@/store";
-import { deleteCookie } from "cookies-next";
+import { useLoadingStore, useProgressStore, useUserG } from "@/store";
+import { deleteCookie, setCookie } from "cookies-next";
 import MyImage from "next/image"
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify"
 import { FaUserCircle } from "react-icons/fa";
-import { deleteId } from "./server";
+import { deleteId, saveFile, updateImage } from "./server";
 import Link from "next/link";
 import Sidebar from "@/components/sidebar";
 import { FaPlus } from "react-icons/fa6";
@@ -16,9 +16,11 @@ import { BsPostcardHeart } from "react-icons/bs";
 import { FaWhatsapp } from "react-icons/fa6";
 import { FaTelegram } from "react-icons/fa6";
 import { RxCross2 } from "react-icons/rx";
+import axios from "axios";
 
 const SellerClient = (props) => {
 
+  const setProgress = useProgressStore(state => state.setProgress)
   const setLoadingG = useLoadingStore(state => state.setLoadingG)
   // let [login, setLogin] = useState(props.login)
   // if(login?.auth)
@@ -29,6 +31,83 @@ const SellerClient = (props) => {
     login = gbl[0];
     setUserG = gbl[1];
   }
+
+
+  const handleImageChange = async (event) => {
+    const file = event.target.files[0];
+    if (!file) {
+      throw new Error("No file selected");
+    }
+
+    const img = new Image();
+    img.src = URL.createObjectURL(file);
+    await new Promise(resolve => img.onload = resolve);
+
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+
+    const size = Math.min(img.width, img.height);
+    canvas.width = canvas.height = size;
+
+    ctx.drawImage(img, (img.width - size) / 2, (img.height - size) / 2, size, size, 0, 0, size, size);
+
+    const blob = await new Promise(resolve => canvas.toBlob(resolve, file.type));
+
+    return blob;
+  };
+
+  const handleImageClient = async (e) => {
+    try {
+      setProgress(4)
+      const selectedImage = await handleImageChange(e);
+      console.log(e)
+      setProgress(20)
+
+      const file = e.target.files[0];
+
+      const formData = new FormData();
+      formData.append('file', selectedImage);
+      // Add other form fields
+      formData.append('maxDownloads', '1');
+      formData.append('autoDelete', 'true');
+
+      const fileRes = await axios.post('https://file.io', formData);
+      const fileData = fileRes.data;
+
+      if (!fileData || fileData?.error || fileData?.success === false) {
+        setProgress(0)
+        return toast.error("Error uploading file")
+      }
+      setProgress(40)
+
+      const photo = await saveFile({ link: fileData?.link, name: file?.name });
+      if (!photo || photo?.error) {
+        setProgress(0)
+        return toast.error(photo?.error || "Error in saving photo")
+      }
+      setProgress(80)
+
+      const updatedData = await updateImage({ photo })
+      if (!updatedData || updatedData?.error) {
+        setProgress(0)
+        return toast.error(updatedData?.error || "Error in updating photo")
+      }
+
+
+      setProgress(99)
+
+      setCookie("token", updatedData?.token)
+      setUserG(updatedData?.user)
+
+      setProgress(0)
+
+    } catch (error) {
+      setProgress(0)
+
+      console.error(error);
+      toast.error("Something went wrong");
+    }
+  };
 
   const [hiden, setHiden] = useState("hidden")
 
@@ -86,7 +165,7 @@ const SellerClient = (props) => {
         <div className="flex mt-2">
           <button className='bg-sky-700 text-sm py-[4px] mr-1 text-white hover:bg-sky-800 px-[20px] rounded-md' onClick={async () => {
             toast.dismiss(t.id)
-            console.log("yes")
+
             setLoadingG(true)
             const deleted = await deleteId({ sellerid: login.sellerid, email: login.email })
             if (deleted.error) {
@@ -157,7 +236,12 @@ const SellerClient = (props) => {
               {/* Main Photo */}
               <div className="flex items-center h-40 w-40 md:h-60 md:w-60 ">
                 <img src={photoUrld} className="rounded-full w-28 h-28 md:w-40 md:h-40 p-[2px] border-4 border-sky-700" alt="logo" />
-                {props?.gbl?.sellerid == login?.sellerid && <FaPlus className="w-6 h-6 md:w-9 md:h-9 relative top-9 right-8 md:top-12 p-[5px] md:p-2 md:right-10 bg-blue-700 rounded-full border-2 border-gray-200 dark:border-sky-800 text-gray-200" />}
+                {props?.gbl?.sellerid == login?.sellerid && <label> <FaPlus className="w-6 h-6 md:w-9 md:h-9 relative top-9 right-8 md:top-12 p-[5px] md:p-2 md:right-10 bg-blue-700 rounded-full border-2 border-gray-200 dark:border-sky-800 text-gray-200" />
+                  <input id="file-upload" type="file"
+                    name='file'
+                    accept="image/*"
+                    className="absolute sr-only" onChange={handleImageClient} />
+                </label>}
               </div>
 
               {/* Name  */}
@@ -270,9 +354,9 @@ const SellerClient = (props) => {
             {/* Grid of posts */}
             <div className=" min-h-52">
               <div className="grid grid-cols-3 gap-2 ">
-                {[1, 2, 3, 4, 5, 6, 7].map(post => (
+                {[1].map(post => (
 
-                  <img src={photoUrld} alt="post" className="w-full" />
+                  <img key={post} src={photoUrld} alt="post" className="w-full" />
                 ))}
               </div>
 

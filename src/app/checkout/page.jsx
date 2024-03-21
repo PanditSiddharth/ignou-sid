@@ -36,7 +36,7 @@ const RazorpayPayment = () => {
                     order_id: data.id,
                     handler: function (response) {
                         // Handle successful payment
-                        console.log(response.data)
+                      
                         toast.info('Payment successful. Payment ID: ' + response.razorpay_payment_id, {duration: 20000});
                         // You may want to redirect to a thank you page or perform further actions
                     },

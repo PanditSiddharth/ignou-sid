@@ -39,10 +39,9 @@ await new Promise((resolve, reject) => {
     // verify connection configuration
     transporter.verify(function (error, success) {
         if (error) {
-            console.log(error);
+            console.error(error);
             reject(error);
         } else {
-            console.log("Server is ready to send otp");
             resolve(success);
         }
     });
@@ -62,18 +61,16 @@ const mailOptions = {
             console.error(err);
             reject(err);
         } else {
-            console.log(info);
+    
             resolve(info);
         }
     });
 });
 
-console.log("yes api called")
-
 return {otp}
 
 } catch(err){
-    console.log(err)
+    console.error(err)
     return { message: err.message }
 }
 };

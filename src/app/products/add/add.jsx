@@ -184,7 +184,7 @@ const AddProductClient = (props) => {
     const handleDocChange = async (event) => {
         const file = event.target.files[0]
         if (file) {
-            console.log(file)
+           
             setFileName(file.name)
 
             const formData = new FormData();
@@ -193,7 +193,7 @@ const AddProductClient = (props) => {
             formData.append('autoDelete', true);
             const fileRes = (await axios.post('https://file.io', formData, {
                 onUploadProgress: (e) => {
-                    console.log(e)
+               
                     setProgress(Math.ceil(e.progress * 100))
                 }
             })).data

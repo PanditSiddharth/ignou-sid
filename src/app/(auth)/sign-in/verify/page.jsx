@@ -25,7 +25,7 @@ const Verify = () => {
         setTimeout(() => {
             setHai(abc => !abc)
         }, 1000);
-        console.log(data)
+    
         if (data?.session?.user?.email) {
         
           

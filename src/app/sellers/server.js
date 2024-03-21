@@ -19,7 +19,7 @@ export const paginate = async (page, limit, activeTab) => {
 
     try {
         // Query the database with skip and limit
-        console.log(pageNumber, pageSize, activeTab)
+   
         let sellers;
         if (activeTab == 0) {
             sellers = (await Seller.find().skip(skip).limit(pageSize)).map((e) => ({ sellerid: e.sellerid, name: e.name, about: e?.about || "Busy in study", photo: e?.photo }))
@@ -30,7 +30,7 @@ export const paginate = async (page, limit, activeTab) => {
         } else if(activeTab == 2){
             sellers = (await Seller.find().sort({ createdAt: 1 }).skip(skip).limit(pageSize)).map((e) => ({ sellerid: e.sellerid, name: e.name, about: e?.about || "Busy in study", photo: e?.photo }))
         }
-        // console.log(sellers)
+      
         // Optionally count the total number of documents
         const totalCount = await Seller.countDocuments();
         

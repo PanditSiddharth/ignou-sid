@@ -40,7 +40,7 @@ const CategoriesClient = (props) => {
 
   // Check if activeCategory and activeCategory.photo are defined
   const photoUrld = (activeCategory?.photo?.thumb ? activeCategory.photo?.thumb : `https://ui-avatars.com/api/?name=${activeCategory?.name || "L O L"}&background=random`)
-console.log(photoUrld)
+
  
 useEffect(()=> {
     setLoadingG(false)

@@ -24,7 +24,7 @@ const server = async (e) => {
            if(seller.password != e.password)
                return ({ error: "Password is incorrect" })
             const nSeller = JSON.parse(JSON.stringify(seller))
-            // console.log(nSeller)
+           
         const token = jwt.sign(nSeller, process.env.JWT_TOKEN, { expiresIn: "20d" })
         return { token, userid: nSeller.sellerid, user: nSeller }
         } else if(e.who == "student"){
@@ -42,7 +42,7 @@ const server = async (e) => {
 
         return { error: "Something went wrong"}
     } catch (error) {
-        console.log(error);
+        console.erro(error);
         return { error: error.message }
     }
 }

@@ -46,14 +46,14 @@ export async function imageupload(f) {
 
         let pres = response.data;
 
-        console.log(pres)
+       
         if(!pres?.status){
             return { "error": "Error in saving image please contact us or do after some time" }
         }
         let urlA = pres?.url.split("/")
         let urld = `https://i.postimg.cc/${urlA[urlA.length - 2]}/sid.${extension}`
 
-        console.log(urld)
+       
         return {"url": pres.url, urld}
 
     } catch (error) {

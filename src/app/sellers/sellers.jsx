@@ -35,11 +35,10 @@ const SellersTab = ({
     const pagestofetch = Math.ceil(clientHeight / 700)
     const values = pagestofetch * 20;
 
-    console.log("fetching", values);
     paginate(1, values, mkey)
       .then((e) => {
         if (!e) {
-          console.log(e, "Sellers"); // Handle potential errors gracefully
+          console.error(e, "Sellers"); // Handle potential errors gracefully
           return;
         }
 
@@ -60,7 +59,7 @@ const SellersTab = ({
 
   // Run fetchInitial only once when the component mounts
   useEffect(() => {
-    console.log("yes initial value changed")
+
     if (stData[mkey].page === 0) {
       fetchInitial();
     }
@@ -70,7 +69,7 @@ const SellersTab = ({
     try {
       if (!fetchG && stData[mkey].totalCount >= 20 * stData[mkey].page) {
         fetchG = true;
-        console.log(stData)
+
         const e = await paginate(stData[mkey].page + 1, 20, mkey);
 
         if (!e) return fetchG = false;

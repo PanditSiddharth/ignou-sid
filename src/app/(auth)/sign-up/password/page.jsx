@@ -32,8 +32,7 @@ const Password = () => {
         if (password != e.get("cpassword")) {
             return toast.error("Password mismatch")
         }
-        console.log(password, data)
-        console.log(e)
+
         if (data?.session?.user?.email) {
             const user = {
                 userid: getId(),

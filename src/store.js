@@ -23,6 +23,12 @@ export const useStudentActiveTabStore = create((set) => ({
   setActiveTab: (tab) => set((state) => ({ activeTab: tab }))
 }))
 
+export const useProgressStore = create((set) => ({
+  progress: 0,
+  setProgress: (prog) => set((state) => ({ progress:prog }))
+}))
+
+
 export const useStudentActiveTab = () => {
   const activeTab = useStudentActiveTabStore(state => state.activeTab)
   const setActiveTab = useStudentActiveTabStore(state => state.setActiveTab)
@@ -46,6 +52,5 @@ export const useUserG = (loginn) => {
     }
   }, [loggedIn])
 
-  // console.log(loggedIn)
   return [login, setUserG]
 }

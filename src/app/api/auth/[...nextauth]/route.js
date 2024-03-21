@@ -11,7 +11,6 @@ const handler = NextAuth({
     ],
     callbacks: {
         async session(session, user) {
-            console.log('Session', session?.session)
           // Generate JWT token with additional fields
           const token = jwt.sign({
             image: session?.session?.user?.image,

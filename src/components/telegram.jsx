@@ -13,8 +13,6 @@ const TelegramLogin = () => {
         (response.username ? ', @' + response.username : '') +
         ')'
     );
-
-    console.log(response)
     // You can perform further actions upon successful authentication
   };
 

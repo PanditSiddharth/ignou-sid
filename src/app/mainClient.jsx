@@ -19,7 +19,7 @@ export default function MainClient(props) {
   //   const [login, setLogin] = useState(props?.login)
   const [login, setUserG] = useUserG(props?.login)
   const session = useSession()
-  console.log(session)
+  
 
   useEffect(() => {
     toast.dismiss()
@@ -28,7 +28,7 @@ export default function MainClient(props) {
 
   const handleRoute = (e) => {
     // e.preventDefault();
-    console.log(e.target)
+ 
     if (window.location.pathname != e.target.id) {
       setLoadingG(true)
       // router.push(e.target.id)
