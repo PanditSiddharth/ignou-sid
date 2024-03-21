@@ -6,6 +6,7 @@ import FformData from 'form-data';
 import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
 import axios from "axios";
+import Product from "@/modals/products";
 
 export const deleteId = async (e) => {
     try {
@@ -82,11 +83,11 @@ export async function updateImage(e) {
         const token = cookies().get("token")?.value;
         let cookie = null;
         if (token) {
-            cookie = jwt.verify(token, process.env.JWT_TOKEN) 
+            cookie = jwt.verify(token, process.env.JWT_TOKEN)
         }
 
-        
-        if(!cookie || !cookie?.sellerid){
+
+        if (!cookie || !cookie?.sellerid) {
             return { error: "You are not authorized to do this" }
         }
 
@@ -95,12 +96,12 @@ export async function updateImage(e) {
             await connect();
         }
 
-        const user = await Seller.updateOne({sellerid: cookie?.sellerid}, {$set: {photo: e?.photo}})
+        const user = await Seller.updateOne({ sellerid: cookie?.sellerid }, { $set: { photo: e?.photo } })
 
-        if(user && user?.updateCount === 0){
+        if (user && user?.updateCount === 0) {
             return { error: "Something went wrong" }
         }
-        const newData = JSON.parse(JSON.stringify({...cookie, photo: e?.photo}));
+        const newData = JSON.parse(JSON.stringify({ ...cookie, photo: e?.photo }));
 
         let newToken = jwt.sign(newData, process.env.JWT_TOKEN)
         return { "message": "Successfull", "token": newToken, user: newData }
@@ -108,5 +109,31 @@ export async function updateImage(e) {
     } catch (error) {
         console.error(error);
         return { "error": error.message }
+    }
+}
+
+export async function paginate(sellerid, page = 1, pageSize = 20) {
+    try {
+
+        if(!sellerid) return { "error": "Please pass seller id"}
+
+        if (mongoose.connection?.readyState !== 1) {
+            console.log("connecting...")
+            await connect();
+        }
+
+
+        // Calculate the number of documents to skip based on the page number and page size
+        const skip = (page - 1) * pageSize;
+
+        // Find products with pagination
+        const products = await Product.find({ sellerid: sellerid })
+            .skip(skip) 
+            .limit(pageSize);
+
+        return products;
+    } catch (error) {
+        console.error('Error finding products:', error);
+        throw new Error('Failed to find products');
     }
 }

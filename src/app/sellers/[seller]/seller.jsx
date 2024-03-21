@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify"
 import { FaUserCircle } from "react-icons/fa";
-import { deleteId, saveFile, updateImage } from "./server";
+import { deleteId, paginate, saveFile, updateImage } from "./server";
 import Link from "next/link";
 import Sidebar from "@/components/sidebar";
 import { FaPlus } from "react-icons/fa6";
@@ -22,6 +22,7 @@ const SellerClient = (props) => {
 
   const setProgress = useProgressStore(state => state.setProgress)
   const setLoadingG = useLoadingStore(state => state.setLoadingG)
+  const [products, setProducts] = useState([])
   // let [login, setLogin] = useState(props.login)
   // if(login?.auth)
   let [login, setUserG] = useState(props?.login);
@@ -120,6 +121,9 @@ const SellerClient = (props) => {
     setLoadingG(false)
     toast.dismiss()
     setLoaded("loaded")
+    paginate(login?.sellerid, 1, 20).then((prs)=> {
+      setProducts(prs)
+    })
   }, [])
 
   // Check if login and login.photo are defined
@@ -248,13 +252,13 @@ const SellerClient = (props) => {
               <div className="flex py-4 dark:text-gray-300 flex-col justify-center space-y-1">
                 <div className="flex space-x-7 items-center">
                   <h3 className="flex text-2xl font-extrabold whitespace-nowrap">{"@ " + login?.sellerid}</h3>
-                  <div className="space-x-1 hidden md:flex w-56">
+                  <div className="space-x-1 hidden md:flex w-60 min-w-52 max-w-72">
                     {login?.sellerid == props?.gbl?.sellerid ? <button onClick={e => toast.info("Still working on it")} className="bg-sky-700 text-gray-200  dark:text-gray-200 rounded-md p-1 w-1/2">Edit</button> :
                       <Link href={`https://telegram.me/share/url?url=https://ignou.sidsharma.in/sellers/${login?.sellerid}&text=See ignou products of ${login?.name}. this is good and cheap`} target="_blank" className="bg-sky-700 text-gray-200  dark:text-gray-200 rounded-md p-1 w-1/2 whitespace-nowrap overflow-ellipsis overflow-hidden flex items-center space-x-1 px-3">                      <FaTelegram className="w-5 h-5 text-sky-700 bg-gray-200 rounded-full" />
                         <div>
                           Share
                         </div></Link>}
-                    {login.sellerid == props?.gbl?.sellerid ? <button onClick={handleLogout} className="bg-sky-700 text-gray-200 dark:text-gray-200 rounded-md p-1 w-1/2">Logout</button> :
+                    {login.sellerid == props?.gbl?.sellerid ? <Link href={"/products/add"} className="bg-sky-700 text-gray-200 dark:text-gray-200 rounded-md p-1 w-1/2 whitespace-nowrap">Add Product</Link> :
                       <Link href={`whatsapp://send?text=See ignou products of ${login?.name} at https://ignou.sidsharma.in/sellers/${login?.sellerid}. This is good and cheap.`} target="_blank" className="bg-sky-700 text-gray-200  dark:text-gray-200 rounded-md p-1 w-1/2 whitespace-nowrap overflow-ellipsis overflow-hidden flex items-center space-x-1 px-3">
                         <FaWhatsapp className="w-5 h-5" />
                         <div>
@@ -288,14 +292,14 @@ const SellerClient = (props) => {
                   <h5 className="text-sm dark:text-gray-200">{login?.about || "No about"}</h5>
                 </div>
 
-                <div className={"space-x-1 flex md:hidden min-w-48 max-w-64"}>
+                <div className={"space-x-1 flex md:hidden min-w-48 w-60 max-w-72"}>
                   {login?.sellerid == props?.gbl?.sellerid ? <button onClick={e => toast.info("Still working on it")} className="bg-sky-700 text-gray-200  dark:text-gray-200 rounded-md p-1 w-1/2">Edit</button> :
                     <Link href={`https://telegram.me/share/url?url=https://ignou.sidsharma.in/sellers/${login?.sellerid}&text=See ignou products of ${login?.name}. this is good and cheap`} target="_blank" className="bg-sky-700 text-gray-200  dark:text-gray-200 rounded-md p-1 w-1/2 whitespace-nowrap overflow-ellipsis overflow-hidden flex items-center space-x-1 px-3">                      <FaTelegram className="w-5 h-5" />
                       <div>
                         Share
                       </div></Link>}
 
-                  {login.sellerid == props?.gbl?.sellerid ? <button onClick={handleDelete} className="bg-sky-700 text-gray-200  dark:text-gray-200  rounded-md p-1 w-1/2">Logout</button> :
+                  {login.sellerid == props?.gbl?.sellerid ? <Link href={"/products/add"} className="bg-sky-700 text-gray-200  dark:text-gray-200  rounded-md p-1 w-1/2 whitespace-nowrap">Add Product</Link> :
                     <Link href={`whatsapp://send?text=See ignou products of ${login?.name} at https://ignou.sidsharma.in/sellers/${login?.sellerid}. This is good and cheap.`} target="_blank" className="bg-sky-700 text-gray-200  dark:text-gray-200 rounded-md p-1 w-1/2 whitespace-nowrap overflow-ellipsis overflow-hidden flex items-center space-x-1 px-3">
                       <FaWhatsapp className="w-5 h-5" />
                       <div>
@@ -353,15 +357,26 @@ const SellerClient = (props) => {
 
             {/* Grid of posts */}
             <div className=" min-h-52">
-              <div className="grid grid-cols-3 gap-2 ">
-                {[1].map(post => (
+              <div className="grid grid-cols-3 gap-2 justify-start align-baseline">
+                <div>{!loaded ? "Fetching products" : (products?.length == 0 ? "No products": "")}</div>
+                {products?.map((post, index) => (
+                  <div>
+                  <img key={index} src={post?.thumbnail?.thumb} alt="post" className="w-full" />
+                  <div className="relative bottom-20">
 
-                  <img key={post} src={photoUrld} alt="post" className="w-full" />
+                  <div className="absolute bg-sky-700 dark:bg-sky-900 dark:text-gray-200">
+                    <div>{"product id: " + post?.productid}</div>
+                    <div>{"Product name: " + post?.name}</div>
+                    <div>{"Categories " + post?.tags?.join(" ")}</div>
+                  </div>
+                  </div>
+                  </div>
                 ))}
               </div>
 
             </div>
 
+                <div className={"h-20 w-full"}></div>
           </div>
         </div>
       </div>

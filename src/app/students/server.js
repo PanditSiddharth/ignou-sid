@@ -30,7 +30,7 @@ export const paginate = async (page, limit, activeTab) => {
         } else if(activeTab == 2){
             students = (await Student.find().sort({ createdAt: 1 }).skip(skip).limit(pageSize)).map((e) => ({ studentid: e.studentid, name: e.name, about: e?.about || "Busy in study", photo: e?.photo }))
         }
-        // console.log(students)
+    
         // Optionally count the total number of documents
         const totalCount = await Student.countDocuments();
         
