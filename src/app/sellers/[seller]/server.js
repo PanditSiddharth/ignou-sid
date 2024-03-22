@@ -131,7 +131,7 @@ export async function paginate(sellerid, page = 1, pageSize = 20) {
             .skip(skip) 
             .limit(pageSize);
 
-        return products;
+        return JSON.parse(JSON.stringify(products));
     } catch (error) {
         console.error('Error finding products:', error);
         throw new Error('Failed to find products');

@@ -47,6 +47,10 @@ const productSchema = new Schema({
             required: true
         },
         },
+    date: {
+        type: String,
+        default: new Date().toLocaleString("en-US", {timeZone: "Asia/Kolkata", "dateStyle": "medium"})
+    }
     }
 );
 

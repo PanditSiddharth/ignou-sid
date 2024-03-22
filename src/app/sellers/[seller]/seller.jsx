@@ -23,15 +23,10 @@ const SellerClient = (props) => {
   const setProgress = useProgressStore(state => state.setProgress)
   const setLoadingG = useLoadingStore(state => state.setLoadingG)
   const [products, setProducts] = useState([])
-  // let [login, setLogin] = useState(props.login)
-  // if(login?.auth)
-  let [login, setUserG] = useState(props?.login);
-  let gbl;
-  if (props?.login?.password) {
-    gbl = useUserG(props?.login);
-    login = gbl[0];
-    setUserG = gbl[1];
-  }
+  // let [userProfile, setUserProfile] = useState(props.userProfile)
+  // if(userProfile?.auth)
+  let [userProfile, setUserProfile] = useState(props?.login);
+  const [login, setUserG] = useUserG(props?.gbl);
 
 
   const handleImageChange = async (event) => {
@@ -61,7 +56,7 @@ const SellerClient = (props) => {
     try {
       setProgress(4)
       const selectedImage = await handleImageChange(e);
-     
+
       setProgress(20)
 
       const file = e.target.files[0];
@@ -113,7 +108,7 @@ const SellerClient = (props) => {
   const [hiden, setHiden] = useState("hidden")
 
   // else 
-  // var [login, setUserG ] = useState(props?.login)
+  // var [userProfile, setUserG ] = useState(props?.userProfile)
 
   const router = useRouter()
   let [loaded, setLoaded] = useState("")
@@ -121,13 +116,13 @@ const SellerClient = (props) => {
     setLoadingG(false)
     toast.dismiss()
     setLoaded("loaded")
-    paginate(login?.sellerid, 1, 20).then((prs)=> {
+    paginate(userProfile?.sellerid, 1, 20).then((prs) => {
       setProducts(prs)
     })
   }, [])
 
-  // Check if login and login.photo are defined
-  const photoUrld = (login?.photo?.thumb || `https://ui-avatars.com/api/?name=${login?.name || "L O L"}&background=random`);
+  // Check if userProfile and userProfile.photo are defined
+  const photoUrld = (userProfile?.photo?.thumb || `https://ui-avatars.com/api/?name=${userProfile?.name || "L O L"}&background=random`);
 
 
   const handleLogout = (e) => {
@@ -171,7 +166,7 @@ const SellerClient = (props) => {
             toast.dismiss(t.id)
 
             setLoadingG(true)
-            const deleted = await deleteId({ sellerid: login.sellerid, email: login.email })
+            const deleted = await deleteId({ sellerid: userProfile.sellerid, email: userProfile.email })
             if (deleted.error) {
               setLoadingG(false)
               return toast.error(deleted.error)
@@ -205,13 +200,13 @@ const SellerClient = (props) => {
       <div className="">
 
         <div className="pl-3 py-1 border-b border-sky-400 cursor-pointer">Generate Referal</div>
-        {props?.gbl?.sellerid == login?.sellerid ? <div className="pl-3 py-1 border-b border-sky-400 cursor-pointer" onClick={handleLogout}>Logout</div> : <Link href={`https://telegram.me/share/url?url=https://ignou.sidsharma.in/sellers/${login?.sellerid}&text=See ignou products of ${login?.name}. this is good and cheap`} target="_blank" className="whitespace-nowrap flex items-center space-x-1 pl-3 py-1 border-b border-sky-400 cursor-pointer">
+        {login?.sellerid == userProfile?.sellerid ? <div className="pl-3 py-1 border-b border-sky-400 cursor-pointer" onClick={handleLogout}>Logout</div> : <Link href={`https://telegram.me/share/url?url=https://ignou.sidsharma.in/sellers/${userProfile?.sellerid}&text=See ignou products of ${userProfile?.name}. this is good and cheap`} target="_blank" className="whitespace-nowrap flex items-center space-x-1 pl-3 py-1 border-b border-sky-400 cursor-pointer">
           <FaTelegram className="w-5 h-5 text-sky-300 bg-sky-800 rounded-full" />
           <div>
             Share
           </div></Link>}
 
-        {login?.sellerid == props?.gbl?.sellerid ? <div className="pl-3 py-1 cursor-pointer" onClick={handleDelete}>Delete</div> : <Link href={`whatsapp://send?text=See ignou products of ${login?.name} at https://ignou.sidsharma.in/sellers/${login?.sellerid}. This is good and cheap.`} target="_blank" className="whitespace-nowrap flex items-center space-x-1 pl-3 py-1 border-b border-sky-400 cursor-pointer">
+        {userProfile?.sellerid == login?.sellerid ? <div className="pl-3 py-1 cursor-pointer" onClick={handleDelete}>Delete</div> : <Link href={`whatsapp://send?text=See ignou products of ${userProfile?.name} at https://ignou.sidsharma.in/sellers/${userProfile?.sellerid}. This is good and cheap.`} target="_blank" className="whitespace-nowrap flex items-center space-x-1 pl-3 py-1 border-b border-sky-400 cursor-pointer">
           <FaWhatsapp className="w-5 h-5" />
           <div>
             Share
@@ -226,13 +221,13 @@ const SellerClient = (props) => {
 
         {/* Left side */}
         <div className="sm:flex w-14 lg:min-w-72 hidden h-full">
-          <Sidebar gbl={props?.gbl} />
+          <Sidebar gbl={props?.login} />
         </div>
 
         {/* Right Side */}
         <div className="w-full overflow-x-hidden  xl:flex xl:justify-center">
           <div className="w-full xl:max-w-[900px]">
-            <div className="flex md:hidden w-full dark:bg-sky-800 p-3 font-bold text-2xl dark:text-gray-400">{"ID: " + login?.sellerid}</div>
+            <div className="flex md:hidden w-full dark:bg-sky-800 p-3 font-bold text-2xl dark:text-gray-400">{"ID: " + userProfile?.sellerid}</div>
 
             {/* Photo */}
             <div className="flex rounded-full px-3 md:px-4">
@@ -240,7 +235,7 @@ const SellerClient = (props) => {
               {/* Main Photo */}
               <div className="flex items-center h-40 w-40 md:h-60 md:w-60 ">
                 <img src={photoUrld} className="rounded-full w-28 h-28 md:w-40 md:h-40 p-[2px] border-4 border-sky-700" alt="logo" />
-                {props?.gbl?.sellerid == login?.sellerid && <label> <FaPlus className="w-6 h-6 md:w-9 md:h-9 relative top-9 right-8 md:top-12 p-[5px] md:p-2 md:right-10 bg-blue-700 rounded-full border-2 border-gray-200 dark:border-sky-800 text-gray-200" />
+                {login?.sellerid == userProfile?.sellerid && <label> <FaPlus className="w-6 h-6 md:w-9 md:h-9 relative top-9 right-8 md:top-12 p-[5px] md:p-2 md:right-10 bg-blue-700 rounded-full border-2 border-gray-200 dark:border-sky-800 text-gray-200" />
                   <input id="file-upload" type="file"
                     name='file'
                     accept="image/*"
@@ -251,15 +246,15 @@ const SellerClient = (props) => {
               {/* Name  */}
               <div className="flex py-4 dark:text-gray-300 flex-col justify-center space-y-1">
                 <div className="flex space-x-7 items-center">
-                  <h3 className="flex text-2xl font-extrabold whitespace-nowrap">{"@ " + login?.sellerid}</h3>
+                  <h3 className="flex text-2xl font-extrabold whitespace-nowrap">{"@ " + userProfile?.sellerid}</h3>
                   <div className="space-x-1 hidden md:flex w-60 min-w-52 max-w-72">
-                    {login?.sellerid == props?.gbl?.sellerid ? <button onClick={e => toast.info("Still working on it")} className="bg-sky-700 text-gray-200  dark:text-gray-200 rounded-md p-1 w-1/2">Edit</button> :
-                      <Link href={`https://telegram.me/share/url?url=https://ignou.sidsharma.in/sellers/${login?.sellerid}&text=See ignou products of ${login?.name}. this is good and cheap`} target="_blank" className="bg-sky-700 text-gray-200  dark:text-gray-200 rounded-md p-1 w-1/2 whitespace-nowrap overflow-ellipsis overflow-hidden flex items-center space-x-1 px-3">                      <FaTelegram className="w-5 h-5 text-sky-700 bg-gray-200 rounded-full" />
+                    {userProfile?.sellerid == login?.sellerid ? <button onClick={e => toast.info("Still working on it")} className="bg-sky-700 text-gray-200  dark:text-gray-200 rounded-md p-1 w-1/2">Edit</button> :
+                      <Link href={`https://telegram.me/share/url?url=https://ignou.sidsharma.in/sellers/${userProfile?.sellerid}&text=See ignou products of ${userProfile?.name}. this is good and cheap`} target="_blank" className="bg-sky-700 text-gray-200  dark:text-gray-200 rounded-md p-1 w-1/2 whitespace-nowrap overflow-ellipsis overflow-hidden flex items-center space-x-1 px-3">                      <FaTelegram className="w-5 h-5 text-sky-700 bg-gray-200 rounded-full" />
                         <div>
                           Share
                         </div></Link>}
-                    {login.sellerid == props?.gbl?.sellerid ? <Link href={"/products/add"} className="bg-sky-700 text-gray-200 dark:text-gray-200 rounded-md p-1 w-1/2 whitespace-nowrap">Add Product</Link> :
-                      <Link href={`whatsapp://send?text=See ignou products of ${login?.name} at https://ignou.sidsharma.in/sellers/${login?.sellerid}. This is good and cheap.`} target="_blank" className="bg-sky-700 text-gray-200  dark:text-gray-200 rounded-md p-1 w-1/2 whitespace-nowrap overflow-ellipsis overflow-hidden flex items-center space-x-1 px-3">
+                    {userProfile.sellerid == login?.sellerid ? <Link href={"/products/add"} className="bg-sky-700 text-gray-200 dark:text-gray-200 rounded-md p-1 w-1/2 whitespace-nowrap">Add Product</Link> :
+                      <Link href={`whatsapp://send?text=See ignou products of ${userProfile?.name} at https://ignou.sidsharma.in/sellers/${userProfile?.sellerid}. This is good and cheap.`} target="_blank" className="bg-sky-700 text-gray-200  dark:text-gray-200 rounded-md p-1 w-1/2 whitespace-nowrap overflow-ellipsis overflow-hidden flex items-center space-x-1 px-3">
                         <FaWhatsapp className="w-5 h-5" />
                         <div>
                           Share
@@ -287,20 +282,20 @@ const SellerClient = (props) => {
                 </div>
 
                 <div className="md:block hidden">
-                  <h3 className="font-extrabold text-2xl dark:text-gray-200">{login?.name}</h3>
+                  <h3 className="font-extrabold text-2xl dark:text-gray-200">{userProfile?.name}</h3>
                   <div className="text-sm text-gray-400">IGNOU Seller</div>
-                  <h5 className="text-sm dark:text-gray-200">{login?.about || "No about"}</h5>
+                  <h5 className="text-sm dark:text-gray-200">{userProfile?.about || "No about"}</h5>
                 </div>
 
                 <div className={"space-x-1 flex md:hidden min-w-48 w-60 max-w-72"}>
-                  {login?.sellerid == props?.gbl?.sellerid ? <button onClick={e => toast.info("Still working on it")} className="bg-sky-700 text-gray-200  dark:text-gray-200 rounded-md p-1 w-1/2">Edit</button> :
-                    <Link href={`https://telegram.me/share/url?url=https://ignou.sidsharma.in/sellers/${login?.sellerid}&text=See ignou products of ${login?.name}. this is good and cheap`} target="_blank" className="bg-sky-700 text-gray-200  dark:text-gray-200 rounded-md p-1 w-1/2 whitespace-nowrap overflow-ellipsis overflow-hidden flex items-center space-x-1 px-3">                      <FaTelegram className="w-5 h-5" />
+                  {userProfile?.sellerid == login?.sellerid ? <button onClick={e => toast.info("Still working on it")} className="bg-sky-700 text-gray-200  dark:text-gray-200 rounded-md p-1 w-1/2">Edit</button> :
+                    <Link href={`https://telegram.me/share/url?url=https://ignou.sidsharma.in/sellers/${userProfile?.sellerid}&text=See ignou products of ${userProfile?.name}. this is good and cheap`} target="_blank" className="bg-sky-700 text-gray-200  dark:text-gray-200 rounded-md p-1 w-1/2 whitespace-nowrap overflow-ellipsis overflow-hidden flex items-center space-x-1 px-3">                      <FaTelegram className="w-5 h-5" />
                       <div>
                         Share
                       </div></Link>}
 
-                  {login.sellerid == props?.gbl?.sellerid ? <Link href={"/products/add"} className="bg-sky-700 text-gray-200  dark:text-gray-200  rounded-md p-1 w-1/2 whitespace-nowrap">Add Product</Link> :
-                    <Link href={`whatsapp://send?text=See ignou products of ${login?.name} at https://ignou.sidsharma.in/sellers/${login?.sellerid}. This is good and cheap.`} target="_blank" className="bg-sky-700 text-gray-200  dark:text-gray-200 rounded-md p-1 w-1/2 whitespace-nowrap overflow-ellipsis overflow-hidden flex items-center space-x-1 px-3">
+                  {userProfile?.sellerid == login?.sellerid ? <Link href={"/products/add"} className="bg-sky-700 text-gray-200  dark:text-gray-200  rounded-md p-1 w-1/2 whitespace-nowrap">Add Product</Link> :
+                    <Link href={`whatsapp://send?text=See ignou products of ${userProfile?.name} at https://ignou.sidsharma.in/sellers/${userProfile?.sellerid}. This is good and cheap.`} target="_blank" className="bg-sky-700 text-gray-200  dark:text-gray-200 rounded-md p-1 w-1/2 whitespace-nowrap overflow-ellipsis overflow-hidden flex items-center space-x-1 px-3">
                       <FaWhatsapp className="w-5 h-5" />
                       <div>
                         Share
@@ -316,9 +311,9 @@ const SellerClient = (props) => {
 
             {/* Some details in less than md screen */}
             <div className="px-3 block md:hidden">
-              <h3 className="font-extrabold text-2xl dark:text-gray-300 md:text-xl">{login?.name}</h3>
+              <h3 className="font-extrabold text-2xl dark:text-gray-300 md:text-xl">{userProfile?.name}</h3>
               <div className="text-gray-400">IGNOU Seller</div>
-              <h5 className="dark:text-gray-200">{login?.about || "No about"}</h5>
+              <h5 className="dark:text-gray-200">{userProfile?.about || "No about"}</h5>
             </div>
 
             {/* Status photos */}
@@ -356,27 +351,36 @@ const SellerClient = (props) => {
             </div>
 
             {/* Grid of posts */}
-            <div className=" min-h-52">
-              <div className="grid grid-cols-3 gap-2 justify-start align-baseline">
-                <div>{!loaded ? "Fetching products" : (products?.length == 0 ? "No products": "")}</div>
-                {products?.map((post, index) => (
-                  <div>
-                  <img key={index} src={post?.thumbnail?.thumb} alt="post" className="w-full" />
-                  <div className="relative bottom-20">
 
-                  <div className="absolute bg-sky-700 dark:bg-sky-900 dark:text-gray-200">
-                    <div>{"product id: " + post?.productid}</div>
-                    <div>{"Product name: " + post?.name}</div>
-                    <div>{"Categories " + post?.tags?.join(" ")}</div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 px-6 sm:px-3 lg:px-0 gap-4">
+              {/* Your child elements */}
+              {products?.map((ele, index) => (
+                <div className="rounded-md border border-gray-300 dark:border-sky-700" key={index}>
+                  <img src={ele?.thumbnail?.thumb} className="w-full rounded-t-md " alt="" />
+                  <div className="flex flex-col p-2 f dark:bg-sky-800 dark:text-gray-200 rounded-b-md space-y-1 items-between">
+                    <div className="h-24">
+                    <h3 className="font-bold text-xl ">{ele?.name}</h3>
+                    <h5 className="text-md max-h-20 line-clamp-2 leading-tight">{ele?.description}</h5>
+                    </div>
+                    <div className="text-sm flex space-x-1 items-center max-h-12">
+                      <img src={userProfile?.photo?.thumb} className="rounded-full bg-sky-700 w-7 h-7"></img>
+                      <div className="w-full whitespace-nowrap">
+                        <div className="font-bold ">{userProfile?.name}</div>
+                        <div className="text-xs">{ele?.date || "Mar 22, 2024"}</div>
+                      </div>
+                      <div className="w-full flex justify-end whitespace-nowrap">
+                        <Link className="text-end justify-self-end w-24 bg-sky-700 p-1 rounded-md text-gray-200" href="/">View Product</Link>
+                      </div>
+                    </div>
                   </div>
-                  </div>
-                  </div>
-                ))}
-              </div>
-
+                </div>
+              ))}
+              {/* Add more child elements as needed */}
             </div>
 
-                <div className={"h-20 w-full"}></div>
+
+
+            <div className={"h-20 w-full"}></div>
           </div>
         </div>
       </div>
