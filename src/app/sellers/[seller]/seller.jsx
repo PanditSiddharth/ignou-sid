@@ -224,7 +224,7 @@ const SellerClient = (props) => {
 
         {/* Left side */}
         <div className="sm:flex w-14 lg:min-w-72 hidden h-full">
-          <Sidebar gbl={props?.login} />
+          <Sidebar gbl={login} />
         </div>
 
         {/* Right Side */}
@@ -293,13 +293,13 @@ const SellerClient = (props) => {
                 {/* sm screen buttons */}
                 <div className={"grid  md:hidden w-32 xs:w-60 text-center xs:grid-cols-2 gap-1"}>
                   {userProfile?.sellerid == login?.sellerid ? <button onClick={e => toast.info("Still working on it")} className="bg-sky-700 text-gray-200  dark:text-gray-200 rounded-md p-1 hidden xs:block">Edit</button> :
-                    <Link href={tgshare} target="_blank" className="bg-sky-700 text-gray-200  dark:text-gray-200 rounded-md p-1  whitespace-nowrap overflow-ellipsis overflow-hidden flex items-center space-x-1 px-3">                      <FaTelegram className="w-5 h-5" />
+                    <Link href={tgshare} target="_blank" className="bg-sky-700 text-gray-200  dark:text-gray-200 rounded-md p-1  whitespace-nowrap overflow-ellipsis overflow-hidden items-center space-x-1 px-3 hidden xs:flex">                      <FaTelegram className="w-5 h-5" />
                       <div>
                         Share
                       </div></Link>}
 
                   {userProfile?.sellerid == login?.sellerid ? <Link href={"/products/add"} className="bg-sky-700 text-gray-200  dark:text-gray-200  rounded-md p-1 whitespace-nowrap">Add Product</Link> :
-                    <Link href={wpshare} target="_blank" className="bg-sky-700 text-gray-200  dark:text-gray-200 rounded-md p-1  whitespace-nowrap overflow-ellipsis overflow-hidden flex items-center space-x-1 px-3">
+                    <Link href={wpshare} target="_blank" className="bg-sky-700 text-gray-200  dark:text-gray-200 rounded-md p-1  whitespace-nowrap overflow-ellipsis overflow-hidden flex items-center justify-center space-x-1 px-3">
                       <FaWhatsapp className="w-5 h-5" />
                       <div>
                         Share
@@ -388,10 +388,10 @@ const SellerClient = (props) => {
                       </div>
 
                       <div className="w-full justify-end whitespace-nowrap hidden xs:flex">
-                        <Link className="text-end justify-self-end w-24 bg-sky-700 p-1 rounded-md text-gray-200" href="/">View Product</Link>
+                        <Link className="text-end justify-self-end w-24 bg-sky-700 p-1 rounded-md text-gray-200" href={`/products/${ele?.productid}`}>View Product</Link>
                       </div>
                     </div>
-                    <Link className="text-center w-full bg-sky-700 p-1 rounded-md text-gray-200 xs:hidden " href="/">View Product</Link>
+                    <Link className="text-center w-full bg-sky-700 p-1 rounded-md text-gray-200 xs:hidden " href={`/products/${ele?.productid}`}>View Product</Link>
                   </div>
                 </div>
               ))}

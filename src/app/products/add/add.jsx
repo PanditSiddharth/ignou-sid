@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { FiCamera } from "react-icons/fi";
 import axios from 'axios';
-import { useLoadingStore } from '@/store';
+import { useLoadingStore, useUserG } from '@/store';
 import { compress, getId } from './client';
 import { saveFile, saveThumb, saveData } from './server';
 import Sidebar from '@/components/sidebar';
@@ -12,12 +12,14 @@ const AddProductClient = (props) => {
     const [mstate, setMstate] = useState("")
     const [showCam, setShowCam] = useState("");
     const [hashtags, setHashtags] = useState([])
-    const [selectedImage, setSelectedImage] = useState(null);
+    const [selectedImage, setSelectedImage] = useState({});
     const [fileName, setFileName] = useState("Choose a file");
     const [progress, setProgress] = useState(0);
     const [fileSaved, setFileSaved] = useState("");
     const [uploading, setUploading] = useState(0);
     const setLoadingG = useLoadingStore(state => state.setLoadingG)
+    const [login, setUserG] = useUserG(props?.login)
+    const [heightState, setHeightState] = useState(`h-[100vh-3.5rem]`)
 
 
     const resetForm = () => {
@@ -26,7 +28,7 @@ const AddProductClient = (props) => {
         setFileSaved("");
         setHashtags([]);
         setUploading(0);
-        setSelectedImage(null);
+        setSelectedImage({});
         setMstate(""); // Reset any other form fields if needed
         document.getElementById("file-upload").value = "";
         document.getElementById("image-upload").value = "";
@@ -41,6 +43,7 @@ const AddProductClient = (props) => {
     useEffect(() => {
         toast.dismiss()
         setLoadingG(false)
+        setHeightState(`h-[100vh-3.5rem]`)
     }, [])
 
     const handleTags = (e) => {
@@ -93,8 +96,8 @@ const AddProductClient = (props) => {
                 return toast.error("Please enter a valid max price")
             }
 
-            let thumb = f.get('thumb')
-            if (!thumb.name) {
+            let thumb = selectedImage?.blob;
+            if (!thumb.type) {
                 setUploading(0)
                 return toast.error("Please select thumbnail for this product")
             }
@@ -173,13 +176,31 @@ const AddProductClient = (props) => {
             reader.onload = function (e) {
                 const img = new Image();
                 img.onload = function () {
-                    setSelectedImage(e.target.result);
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    
+                    const size = Math.min(img.width, img.height);
+                    canvas.width = canvas.height = size;
+                    
+                    ctx.drawImage(img, (img.width - size) / 2, (img.height - size) / 2, size, size, 0, 0, size, size);
+                    
+                    canvas.toBlob((blob) => {
+                        if (blob) {
+                            const imageUrl = URL.createObjectURL(blob);
+                            const newblob = new Blob([blob], {type: file.type});
+                            newblob.name = file.name;
+                            
+                            setSelectedImage({ blob:  newblob, imageUrl });
+                        }
+                    }, file.type);
+                    
                 };
                 img.src = e.target.result;
             };
             reader.readAsDataURL(file);
         }
     };
+    
 
     const handleDocChange = async (event) => {
         const file = event.target.files[0]
@@ -209,7 +230,7 @@ const AddProductClient = (props) => {
         <section className='h-[calc(100vh-4rem)] max-h-screen flex items-center'>
                 {/* Left side */}
                 <div className="sm:flex w-14 lg:min-w-72 hidden h-full bg-white dark:bg-sky-900 text-sky-950 dark:text-stone-50">
-                    <Sidebar gbl={props?.gbl} css1={`h-[calc(100vh-3.5rem)]`} />
+                    <Sidebar gbl={login} css1={heightState} />
                 </div>
 
             <div className={`flex my-8 w-full`}>
@@ -219,7 +240,7 @@ const AddProductClient = (props) => {
                             <div className='ml-2 animate-spin rounded-full h-4 w-4 border-r-2 border-b-2 border-sky-600 '></div>
                         </div>
                         <div className='w-full'>
-                            <div>Saving data..</div>
+                            <div>Saving data...</div>
                             <div className='flex items-center justify-center w-full'>
                                 <div className='w-full border border-black rounded-full h-2 flex'>
                                     <div className={`bg-green-500 `} style={{ width: uploading + "%" }}></div>
@@ -262,7 +283,7 @@ const AddProductClient = (props) => {
                                         onChange={handleImageChange}
                                     />
                                     {selectedImage ? (
-                                        <img src={selectedImage} alt="Selected Image" style={{ maxWidth: '100%', maxHeight: '300px' }} />
+                                        <img src={selectedImage?.imageUrl} alt="Selected Image" style={{ maxWidth: '100%', maxHeight: '300px' }} />
                                     ) :
                                         (<div className="w-24 h-24 text-white border-gray-400 border" ></div>)}
                                 </div>

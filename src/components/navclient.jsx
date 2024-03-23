@@ -31,8 +31,8 @@ const NavebarClient = (props) => {
   const navigations = [
     { name: "Home", href: "/" },
     { name: "About", href: "/about" },
-    { name: "Services", href: "/services" },
-    { name: "Courses", href: "/courses" },
+    { name: "Products", href: "/products" },
+    { name: "Sellers", href: "/sellers" },
     { name: "Contact", href: "/contact" }
   ]
 

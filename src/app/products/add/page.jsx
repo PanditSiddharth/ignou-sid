@@ -12,7 +12,7 @@ const AddProduct = async () => {
         cookie = jwt.verify(token, process.env.JWT_TOKEN)
     }
     return (
-        <AddProductClient login={cookie} />
+        <AddProductClient login={cookie}  />
     )
 }
 
