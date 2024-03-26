@@ -11,7 +11,9 @@ const ProductServer = async (req) => {
   const token = cookies().get('token')?.value;
   let decoded;
   if (token) {
-    decoded = jwt.verify(token, process.env.JWT_TOKEN);
+    let e = jwt.verify(token, process.env.JWT_TOKEN);
+    if(decoded?.name)
+    decoded = JSON.parse(JSON.stringify(e))
   }
 
   if (mongoose.connection?.readyState !== 1) {
@@ -25,7 +27,7 @@ const ProductServer = async (req) => {
     product = await Product.findOne({ productid });
   }
 
-  return (product?.name ? <SellerClient login={JSON.parse(JSON.stringify(decoded))} product={{productid: product?.productid, name: product?.name, sellerid: product?.sellerid, price: product?.price, thumbnail: product?.thumbnail, description: product?.description }} /> : <PageNotFound />)
+  return (product?.name ? <SellerClient login={decoded} product={{productid: product?.productid, name: product?.name, sellerid: product?.sellerid, price: product?.price, thumbnail: product?.thumbnail, description: product?.description }} /> : <PageNotFound />)
 };
 
 export default ProductServer; 
