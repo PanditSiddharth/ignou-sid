@@ -25,7 +25,7 @@ const ProductServer = async (req) => {
     product = await Product.findOne({ productid });
   }
 
-  return (decoded ? <SellerClient login={JSON.parse(JSON.stringify(decoded))} product={JSON.parse(JSON.stringify(product))} /> : <PageNotFound />)
+  return (product?.name ? <SellerClient login={JSON.parse(JSON.stringify(decoded))} product={{productid: product?.productid, name: product?.name, sellerid: product?.sellerid, price: product?.price, thumbnail: product?.thumbnail, description: product?.description }} /> : <PageNotFound />)
 };
 
 export default ProductServer; 

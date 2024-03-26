@@ -7,6 +7,7 @@ import { useLoadingStore, useUserG } from '@/store';
 import { compress, getId } from './client';
 import { saveFile, saveThumb, saveData } from './server';
 import Sidebar from '@/components/sidebar';
+import Link from 'next/link';
 
 const AddProductClient = (props) => {
     const [mstate, setMstate] = useState("")
@@ -47,8 +48,8 @@ const AddProductClient = (props) => {
     }, [])
 
     const handleTags = (e) => {
-        const value = e.target.value?.trim()?.toLowerCase()
-        const matched = value.match(/#\w+/g)
+        const value = e.target.value?.trim()?.toUpperCase()
+        const matched = value.match(/#[\w\-]+/g)
         setHashtags(matched?.map((e, index) => ({ css: hashtags[index]?.css || "flex items-center justify-center bg-gray-500 px-1 h-6 rounded-md text-gray-200", name: e })) || [])
     }
 
@@ -178,34 +179,38 @@ const AddProductClient = (props) => {
                 img.onload = function () {
                     const canvas = document.createElement('canvas');
                     const ctx = canvas.getContext('2d');
-                    
+
                     const size = Math.min(img.width, img.height);
                     canvas.width = canvas.height = size;
-                    
-                    ctx.drawImage(img, (img.width - size) / 2, (img.height - size) / 2, size, size, 0, 0, size, size);
-                    
+
+                    // Calculate the cropping dimensions to crop the middle part
+                    const x = img.width > img.height ? (img.width - size) / 2 : 0;
+                    const y = img.height > img.width ? (img.height - size) / 2 : 0;
+
+                    ctx.drawImage(img, x, y, size, size, 0, 0, size, size);
+
                     canvas.toBlob((blob) => {
                         if (blob) {
                             const imageUrl = URL.createObjectURL(blob);
-                            const newblob = new Blob([blob], {type: file.type});
+                            const newblob = new Blob([blob], { type: file.type });
                             newblob.name = file.name;
-                            
-                            setSelectedImage({ blob:  newblob, imageUrl });
+
+                            setSelectedImage({ blob: newblob, imageUrl });
                         }
                     }, file.type);
-                    
+
                 };
                 img.src = e.target.result;
             };
             reader.readAsDataURL(file);
         }
     };
-    
+
 
     const handleDocChange = async (event) => {
         const file = event.target.files[0]
         if (file) {
-           
+
             setFileName(file.name)
 
             const formData = new FormData();
@@ -214,7 +219,7 @@ const AddProductClient = (props) => {
             formData.append('autoDelete', true);
             const fileRes = (await axios.post('https://file.io', formData, {
                 onUploadProgress: (e) => {
-               
+
                     setProgress(Math.ceil(e.progress * 100))
                 }
             })).data
@@ -228,10 +233,10 @@ const AddProductClient = (props) => {
 
     return (
         <section className='h-[calc(100vh-4rem)] max-h-screen flex items-center'>
-                {/* Left side */}
-                <div className="sm:flex w-14 lg:min-w-72 hidden h-full bg-white dark:bg-sky-900 text-sky-950 dark:text-stone-50">
-                    <Sidebar gbl={login} css1={heightState} />
-                </div>
+            {/* Left side */}
+            <div className="sm:flex w-14 lg:min-w-72 hidden h-full bg-white dark:bg-sky-900 text-sky-950 dark:text-stone-50">
+                <Sidebar gbl={login} css1={heightState} />
+            </div>
 
             <div className={`flex my-8 w-full`}>
                 {uploading != 0 && <div className='fixed flex justify-center w-full top-8 z-50'>
@@ -262,36 +267,43 @@ const AddProductClient = (props) => {
                             <div className="text-white h-28 w-full sm:w-2/3 md:1/2 flex items-center justify-center sm:justify-start rounded-t-md pl-6 mt-4 pr-5 space-x-10">
 
                                 {/* thumb upload */}
-                                <div
-                                    onMouseEnter={() => setShowCam(true)}
-                                    onMouseLeave={() => setShowCam(false)}
-                                    className="relative w-24 h-24 overflow-hidden flex items-center justify-center "
-                                >
+                                <div className='py-4'>
+                                    <div
+                                        onMouseEnter={() => setShowCam(true)}
+                                        onMouseLeave={() => setShowCam(false)}
+                                        className="relative w-24 h-24 overflow-hidden flex items-center justify-center "
+                                    >
 
-                                    <div className="absolute inset-0 flex items-end justify-center">
-                                        <div className="w-full h-8 bg-black bg-opacity-30 flex items-end justify-center">
-                                            <FiCamera className="text-white mb-2" />
+                                        <div className="absolute inset-0 flex items-end justify-center">
+                                            <div className="w-full h-8 bg-black bg-opacity-30 flex items-end justify-center">
+                                                <FiCamera className="text-white mb-2" />
+                                            </div>
                                         </div>
+
+                                        <input
+                                            id="image-upload"
+                                            type="file"
+                                            className="absolute self-end z-50 mb-1 text-transparent"
+                                            accept="image/*"
+                                            name='thumb'
+                                            onChange={handleImageChange}
+                                        />
+                                        {selectedImage?.imageUrl ? (
+                                            <img src={selectedImage?.imageUrl} alt="Selected Image" style={{ maxWidth: '100%', maxHeight: '300px' }} />
+                                        ) :
+                                            (
+                                                <div className="w-24 h-24 text-white border-gray-400 border" ></div>
+                                            )}
                                     </div>
 
-                                    <input
-                                        id="image-upload"
-                                        type="file"
-                                        className="absolute self-end z-50 mb-1 text-transparent"
-                                        accept="image/*"
-                                        name='thumb'
-                                        onChange={handleImageChange}
-                                    />
-                                    {selectedImage ? (
-                                        <img src={selectedImage?.imageUrl} alt="Selected Image" style={{ maxWidth: '100%', maxHeight: '300px' }} />
-                                    ) :
-                                        (<div className="w-24 h-24 text-white border-gray-400 border" ></div>)}
+                                    <Link href="/crop" className=' text-gray-400 underline text-xs text-center w-24 flex justify-center' onClick={e=> setLoadingG(true)}>Crop image</Link>
                                 </div>
 
                                 <div className='flex flex-col justify-center h-full'>
                                     <div className='text-3xl text-gray-600 font-bold'>IGNOU-X</div>
                                     <div className='text-gray-500 text-md'>Add thumbnail</div>
                                 </div>
+
                             </div>
 
                             {/* file upload */}

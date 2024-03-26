@@ -61,7 +61,7 @@ export async function server(e) {
       if (!nuser)
         return ({ "error": "Something went wrong" })
 
-      let token = jwt.sign(user, process.env.JWT_TOKEN, { expiresIn: "20d" })
+      let token = jwt.sign(user, process.env.JWT_TOKEN, { expiresIn: '30d' })
       return { "message": "Successfull", "token": token }
 
     } else {

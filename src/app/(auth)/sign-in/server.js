@@ -36,7 +36,7 @@ const server = async (e) => {
                 return ({ error: "Password is incorrect" })
             }
                 const nStudent = JSON.parse(JSON.stringify(student))
-            const token = jwt.sign(nStudent, process.env.JWT_TOKEN, { expiresIn: "20d" })
+            const token = jwt.sign(nStudent, process.env.JWT_TOKEN, { expiresIn: '30d' })
             return { token, userid: nStudent.studentid, user: nStudent }
         }
 

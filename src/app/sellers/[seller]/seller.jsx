@@ -252,12 +252,12 @@ const SellerClient = (props) => {
                   <h3 className="flex text-xl xs:text-2xl font-extrabold whitespace-nowrap">{"@ " + userProfile?.sellerid}</h3>
                   <div className="space-x-1 hidden md:flex w-60 min-w-52 max-w-72">
                     {userProfile?.sellerid == login?.sellerid ? <button onClick={e => toast.info("Still working on it")} className="bg-sky-700 text-gray-200  dark:text-gray-200 rounded-md p-1 w-1/2">Edit</button> :
-                      <Link href={tgshare} target="_blank" className="bg-sky-700 text-gray-200  dark:text-gray-200 rounded-md p-1 w-1/2 whitespace-nowrap overflow-ellipsis overflow-hidden flex items-center space-x-1 px-3">                      <FaTelegram className="w-5 h-5 text-sky-700 bg-gray-200 rounded-full" />
+                      <Link href={tgshare} target="_blank" className="bg-sky-700 text-gray-200  dark:text-gray-200 rounded-md p-1 w-1/2 whitespace-nowrap overflow-ellipsis overflow-hidden flex items-center justify-center space-x-1 px-3">                      <FaTelegram className="w-5 h-5 text-sky-700 bg-gray-200 rounded-full" />
                         <div>
                           Share
                         </div></Link>}
-                    {userProfile.sellerid == login?.sellerid ? <Link href={"/products/add"} className="bg-sky-700 text-gray-200 dark:text-gray-200 rounded-md p-1 w-1/2 whitespace-nowrap">Add Product</Link> :
-                      <Link href={wpshare} target="_blank" className="bg-sky-700 text-gray-200  dark:text-gray-200 rounded-md p-1 w-1/2 whitespace-nowrap overflow-ellipsis overflow-hidden flex items-center space-x-1 px-3">
+                    {userProfile.sellerid == login?.sellerid ? <Link href={"/products/add"} className="bg-sky-700 text-gray-200 dark:text-gray-200 rounded-md p-1 w-1/2 whitespace-nowrap text-center">Add Product</Link> :
+                      <Link href={wpshare} target="_blank" className="bg-sky-700 text-gray-200  dark:text-gray-200 rounded-md p-1 w-1/2 whitespace-nowrap overflow-ellipsis overflow-hidden flex items-center justify-center space-x-1 px-3">
                         <FaWhatsapp className="w-5 h-5" />
                         <div>
                           Share
@@ -287,7 +287,7 @@ const SellerClient = (props) => {
                 <div className="md:block hidden">
                   <h3 className="font-extrabold text-2xl dark:text-gray-200">{userProfile?.name}</h3>
                   <div className="text-sm text-gray-400">IGNOU Seller</div>
-                  <h5 className="text-sm dark:text-gray-200">{userProfile?.about || "No about"}</h5>
+                  <h5 className="text-sm dark:text-gray-200 max-w-96">{userProfile?.about || "No about"}</h5>
                 </div>
 
                 {/* sm screen buttons */}

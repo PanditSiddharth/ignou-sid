@@ -95,6 +95,10 @@ const Signup = () => {
     async function validation(f) {
         try {
 
+            if(!f.get("terms")){
+                return toast.error("Accept our terms and conditions")
+            }
+
             if (!f.get("who")) {
                 return toast.error("Please select for which you want to sign up (seller or student)")
             }
@@ -158,11 +162,11 @@ const Signup = () => {
 
             user.userid = getId()
             const about = f.get("about")
-            if(about)
-            user.about = about;
+            if (about)
+                user.about = about;
             user.photo = f.get("photo")
             user.who = f.get("who")
-            if(user.who == "student" && f.get("phone")){
+            if (user.who == "student" && f.get("phone")) {
                 user.phone = f.get("phone");
             }
             if (!user?.photo?.name)
@@ -297,7 +301,7 @@ const Signup = () => {
                         </div>
                     </div>
                 </div>}
-                
+
 
                 <div className={`w-full md:w-[7in] mx-5 md:mx-auto bg-white border rounded-md border-sky-900 space-y-1`}>
 
@@ -485,6 +489,19 @@ const Signup = () => {
                             />
                         </div>
 
+                        {/* 6th row accept terms and conditions */}
+                        <div className='flex flex-col md:flex-row justify-between'>
+
+                            <div className={`md:w-full mx-8 my-4 flex items-center space-x-2`}>
+                                <input id="terms" type="checkbox" name='terms' 
+                                     />
+                                    <div className='ml-4'>Accept</div>
+                                <Link href={"/terms"} className=" text-sky-600 hover:underline" >Terms & Conditions</Link>
+                            </div>
+
+                        </div> 
+
+
                         {/* 7th row */}
                         <div className={`flex flex-row w-full justify-center items-center text-gray-700 pb-2 pt-4 ${haveOtp ? "hidden" : ""}`}>
                             <input className='bg-sky-900 text-sm py-[6px] text-white hover:bg-sky-950 px-[20px] rounded-md'
@@ -529,9 +546,10 @@ const Signup = () => {
                                 {/* Google authentication */}
                                 <div className='flex flex-row w-full justify-center space-x-1 text-sm items-center text-gray-700 pb-3'>
                                     <div className='flex font-bold space-x-1 items-center bg-gray-200 rounded-lg py-1 px-2 cursor-pointer'
-                                    onClick={e=>{
-                                        toast.loading("Please wait...")
-                                        signIn("google", {callbackUrl: "/sign-up/password"})}}
+                                        onClick={e => {
+                                            toast.loading("Please wait...")
+                                            signIn("google", { callbackUrl: "/sign-up/password" })
+                                        }}
                                     >
                                         <FcGoogle className='w-6 h-6' />
                                         <div className=''>
